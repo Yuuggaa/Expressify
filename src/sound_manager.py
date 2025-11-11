@@ -7,6 +7,7 @@ class SoundManager:
     def __init__(self):
         self.sounds = {
             "bgm": pygame.mixer.Sound("../assets/sounds/bgm.wav"),
+            "start": pygame.mixer.Sound("../assets/sounds/click.wav"),
             "high_score": pygame.mixer.Sound("../assets/sounds/high_score.wav"),
             "botHigh_score": pygame.mixer.Sound("../assets/sounds/botHigh_score.wav"),
             "upLow_score": pygame.mixer.Sound("../assets/sounds/upLow_score.wav"),

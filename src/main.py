@@ -103,6 +103,7 @@ class Expressify:
         if key == pygame.K_SPACE:
             if self.game_state == "menu":
                 self.game_state = "playing"
+                self.sound_manager.play("start")
                 self.game_logic.start_game()
             elif self.game_state == "results":
                 self.game_state = "menu"
