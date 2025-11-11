@@ -3,11 +3,15 @@ import pygame
 from face_detector import FaceDetector
 from game_logic import GameLogic
 from ui_manager import UIManager
+from sound_manager import SoundManager
+
+# 💡 Inisialisasi mixer sebelum pygame.init()
+pygame.mixer.pre_init(44100, -16, 2, 512)
+pygame.init()
 
 class Expressify:
     def __init__(self):
         """Initialize game components"""
-        pygame.init()
 
         # Game settings
         self.GAME_DURATION = 20  # seconds
@@ -18,6 +22,7 @@ class Expressify:
         self.face_detector = FaceDetector()
         self.game_logic = GameLogic(self.GAME_DURATION)
         self.ui_manager = UIManager(self.WINDOW_WIDTH, self.WINDOW_HEIGHT)
+        self.sound_manager = SoundManager() 
 
         # Camera setup
         self.cap = cv2.VideoCapture(0)
@@ -28,12 +33,16 @@ class Expressify:
         self.running = True
         self.game_state = "menu"  # menu, playing, results
 
+        # ✅ Play BGM hanya sekali di awal
+        
+
     def run(self):
         """Main game loop"""
         clock = pygame.time.Clock()
 
+        bgm_played = False  # 🔹 flag agar BGM hanya sekali diputar
+
         while self.running:
-            # Handle events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
@@ -45,11 +54,15 @@ class Expressify:
                 self.ui_manager.draw_menu()
             elif self.game_state == "playing":
                 self.play_game()
+                # 🔹 mainkan BGM hanya sekali
+                if not bgm_played:
+                    self.sound_manager.play("bgm")
+                    bgm_played = True
+
             elif self.game_state == "results":
                 self.ui_manager.draw_results(
                     self.game_logic.score, self.game_logic.max_score
                 )
-
             pygame.display.flip()
             clock.tick(30)
 
@@ -60,17 +73,11 @@ class Expressify:
         ret, frame = self.cap.read()
         if not ret:
             return
-
-        # Flip frame for mirror effect
+        
         frame = cv2.flip(frame, 1)
-
-        # Detect face and expression
         expression_detected = self.face_detector.detect_expression(frame)
-
-        # Update game logic
         self.game_logic.update(expression_detected)
 
-        # Draw UI with debug info
         self.ui_manager.draw_game_with_debug(
             frame,
             self.game_logic.current_expression,
@@ -79,9 +86,17 @@ class Expressify:
             expression_detected
         )
 
-        # Check if game is over
         if self.game_logic.is_game_over():
             self.game_state = "results"
+            self.sound_manager.stop("bgm")  # ✅ stop bgm saat game selesai
+            if self.game_logic.score >= (0.8 * self.game_logic.max_score):
+                self.sound_manager.play("high_score")
+            elif self.game_logic.score >= (0.6 * self.game_logic.max_score):
+                self.sound_manager.play("botHigh_score")
+            elif self.game_logic.score >= (0.4 * self.game_logic.max_score):
+                self.sound_manager.play("upLow_score")
+            else:
+                self.sound_manager.play("low_score")
 
     def handle_keypress(self, key):
         """Handle keyboard input"""
@@ -91,6 +106,11 @@ class Expressify:
                 self.game_logic.start_game()
             elif self.game_state == "results":
                 self.game_state = "menu"
+                self.sound_manager.stop("high_score")
+                self.sound_manager.stop("botHigh_score")
+                self.sound_manager.stop("upLow_score")
+                self.sound_manager.stop("low_score")
+                self.sound_manager.play("bgm")  # ✅ putar ulang bgm saat restart
                 self.game_logic.reset()
         elif key == pygame.K_ESCAPE:
             self.running = False
