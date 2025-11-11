@@ -2,7 +2,6 @@ import pygame
 import cv2
 import numpy as np
 
-
 class UIManager:
     def __init__(self, width, height):
         """Initialize UI manager"""

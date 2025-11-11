@@ -49,16 +49,16 @@ class FaceDetector:
 
         face_landmarks = results.multi_face_landmarks[0]
 
-        # Draw landmarks on frame
-        self.mp_drawing.draw_landmarks(
-            image=frame,
-            landmark_list=face_landmarks,
-            connections=self.mp_face_mesh.FACEMESH_TESSELATION,
-            landmark_drawing_spec=None,
-            connection_drawing_spec=self.mp_drawing.DrawingSpec(
-                color=(0, 255, 0), thickness=1
-            ),
-        )
+        # Draw landmarks on frame (turn it on for debugging)
+        # self.mp_drawing.draw_landmarks(
+        #     image=frame,
+        #     landmark_list=face_landmarks,
+        #     connections=self.mp_face_mesh.FACEMESH_TESSELATION,
+        #     landmark_drawing_spec=None,
+        #     connection_drawing_spec=self.mp_drawing.DrawingSpec(
+        #         color=(0, 255, 0), thickness=1
+        #     ),
+        # )
 
         # Analyze landmarks for expressions
         expression = self._analyze_landmarks(face_landmarks, frame.shape)
