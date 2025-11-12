@@ -1,8 +1,12 @@
+from pathlib import Path
 import pygame
 import os
 
 pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=512)
 pygame.init()
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+ASSETS_DIR = PROJECT_ROOT / "assets" / "sounds"
 
 class SoundManager:
     def __init__(self):
@@ -30,11 +34,17 @@ class SoundManager:
                 print(f"Sound file not found: {filepath}")
 
     def play(self, sound_name):
-        if sound_name in self.sounds:
-            self.sounds[sound_name].play()
+        """Mainkan suara berdasarkan nama yang terdaftar."""
+        sound = self.sounds.get(sound_name)
+        if sound:
+            sound.play()
         else:
             print(f"Sound '{sound_name}' tidak tersedia.")
 
     def stop(self, sound_name):
-        if sound_name in self.sounds:
-            self.sounds[sound_name].stop()
+        """Hentikan suara tertentu jika sedang dimainkan."""
+        sound = self.sounds.get(sound_name)
+        if sound:
+            sound.stop()
+        else:
+            print(f"[WARNING] Sound '{sound_name}' tidak ditemukan atau belum dimuat.")
