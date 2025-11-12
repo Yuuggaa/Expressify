@@ -14,10 +14,11 @@ Game ini dikembangkan sebagai Tugas Besar untuk mata kuliah **Sistem Teknologi M
 
 - 🎯 **Real-time Face Detection** menggunakan MediaPipe Face Mesh
 - 😊 **4 Ekspresi Berbeda**: Happy, Sad, Surprised, Neutral
-- ⏱️ **20 Detik Gameplay** yang intens dan seru
-- 🎨 **UI Interaktif** dengan Pygame
+- 🎚️ **3 Tingkat Kesulitan**: Easy (30s), Medium (20s), Hard (15s)
+- 🏆 **Leaderboard System**: Top 10 scores per difficulty
+- 🎨 **UI Interaktif** dengan Pygame & animasi
 - 📊 **Sistem Scoring** dengan feedback performa
-- 🎵 **Support untuk Audio** (dapat dikembangkan lebih lanjut)
+- 🎵 **Support untuk Audio** (sound effects & background music)
 
 ## 🧑‍🤝‍🧑 Tim Pengembang
 

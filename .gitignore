@@ -44,3 +44,5 @@ desktop.ini
 # Project specific
 *.log
 .cache/
+leaderboard.json
+

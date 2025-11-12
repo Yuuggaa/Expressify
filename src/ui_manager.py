@@ -33,6 +33,23 @@ class UIManager:
         self.medium_font = pygame.font.Font(None, 36)
         self.small_font = pygame.font.Font(None, 28)
         
+        # Load icon images
+        import os
+        current_dir = os.path.dirname(os.path.abspath(__file__))
+        images_dir = os.path.join(os.path.dirname(current_dir), "assets", "images")
+        
+        try:
+            self.icon_exchange = pygame.image.load(os.path.join(images_dir, "exchange.png"))
+            self.icon_exchange = pygame.transform.scale(self.icon_exchange, (20, 20))
+        except:
+            self.icon_exchange = None
+            
+        try:
+            self.icon_up_down = pygame.image.load(os.path.join(images_dir, "up-down.png"))
+            self.icon_up_down = pygame.transform.scale(self.icon_up_down, (20, 20))
+        except:
+            self.icon_up_down = None
+        
         # Animation variables
         self.menu_time = 0
         self.particles = []
@@ -101,8 +118,8 @@ class UIManager:
         self.screen.blit(text_surface, text_rect)
         return text_rect
 
-    def draw_menu(self):
-        """Draw main menu screen with fun animations"""
+    def draw_menu(self, selected_index=0):
+        """Draw main menu screen with options"""
         self.menu_time += 0.05
         
         # Animated gradient background
@@ -183,13 +200,12 @@ class UIManager:
         # Instructions with decorative bullets
         instructions = [
             "Tunjukkan ekspresi wajah sesuai instruksi!",
-            "Kamu punya 20 detik untuk skor tertinggi!",
         ]
         
-        y_offset = box_y + 40
+        y_offset = box_y + 20
         for i, text in enumerate(instructions):
             # Draw decorative bullet point
-            bullet_color = self.YELLOW if i == 0 else self.CYAN
+            bullet_color = self.YELLOW
             pygame.draw.circle(self.screen, bullet_color, 
                              (box_rect.x + 50, y_offset + 10), 8)
             pygame.draw.circle(self.screen, self.WHITE, 
@@ -199,20 +215,74 @@ class UIManager:
             self.screen.blit(text_surface, (box_rect.x + 80, y_offset))
             y_offset += 50
         
-        # Start button with pulse animation
-        button_y = box_y + 150
-        button_pulse = math.sin(self.menu_time * 3) * 5
-        button_size = 15 + button_pulse
+        # Menu options - HORIZONTAL LAYOUT
+        menu_options = [
+            {"text": "PLAY", "color": self.GREEN},
+            {"text": "LEADERBOARD", "color": self.YELLOW},
+            {"text": "QUIT", "color": self.RED}
+        ]
         
-        self.draw_fancy_button("> Tekan SPASI untuk mulai", 
-                              self.width // 2, button_y, 
-                              self.GREEN, button_size)
+        # Menu positioning
+        menu_y = 420
+        box_width = 220
+        box_height = 80
+        total_width = (box_width * 3) + (40 * 2)  # 3 boxes + 2 gaps
+        start_x = (self.width - total_width) // 2
         
-        # Exit button
-        exit_y = button_y + 50
-        self.draw_fancy_button("> Tekan ESC untuk keluar", 
-                              self.width // 2, exit_y, 
-                              self.RED, 10)
+        for i, option in enumerate(menu_options):
+            is_selected = (i == selected_index)
+            
+            # Calculate position
+            box_x = start_x + (i * (box_width + 40))
+            
+            # Highlight selected with animation
+            if is_selected:
+                pulse = math.sin(self.menu_time * 4) * 3
+                border_color = option["color"]
+                border_width = 4
+                glow_rect = pygame.Rect(box_x - 6, menu_y - 6 - pulse, 
+                                       box_width + 12, box_height + 12 + pulse * 2)
+                pygame.draw.rect(self.screen, border_color, glow_rect, 
+                               border_radius=15, width=border_width)
+            
+            # Draw box
+            opt_rect = pygame.Rect(box_x, menu_y, box_width, box_height)
+            box_surface = pygame.Surface((box_width, box_height), pygame.SRCALPHA)
+            alpha = 240 if is_selected else 180
+            pygame.draw.rect(box_surface, (30, 30, 30, alpha), 
+                           box_surface.get_rect(), border_radius=12)
+            self.screen.blit(box_surface, opt_rect)
+            
+            # Text centered in box
+            text_color = option["color"] if is_selected else self.GRAY
+            text_font = self.medium_font if is_selected else self.small_font
+            text_surface = text_font.render(option["text"], True, text_color)
+            text_rect = text_surface.get_rect(center=(box_x + box_width // 2, menu_y + box_height // 2))
+            self.screen.blit(text_surface, text_rect)
+        
+        # Instructions with icons
+        inst_y = menu_y + 100
+        
+        # Calculate total width for centering
+        text_nav = " untuk navigasi • SPASI untuk pilih"
+        text_nav_surface = self.small_font.render(text_nav, True, self.GRAY)
+        icon_width = 20 if self.icon_exchange else 0
+        total_width = icon_width + text_nav_surface.get_width()
+        
+        start_x = (self.width - total_width) // 2
+        
+        # Draw exchange icon
+        if self.icon_exchange:
+            self.screen.blit(self.icon_exchange, (start_x, inst_y))
+            start_x += icon_width + 5
+        else:
+            # Fallback to text
+            fallback = self.small_font.render("← →", True, self.GRAY)
+            self.screen.blit(fallback, (start_x, inst_y))
+            start_x += fallback.get_width()
+        
+        # Draw rest of text
+        self.screen.blit(text_nav_surface, (start_x, inst_y))
         
         # Team info with stylish background
         team_y = self.height - 100
@@ -220,7 +290,7 @@ class UIManager:
         pygame.draw.rect(team_bg, (0, 0, 0, 120), team_bg.get_rect())
         self.screen.blit(team_bg, (0, team_y))
         
-        team_title = self.small_font.render("* Tim Pengembang:", True, self.YELLOW)
+        team_title = self.small_font.render("Tim Pengembang:", True, self.YELLOW)
         team_rect = team_title.get_rect(center=(self.width // 2, team_y + 25))
         self.screen.blit(team_title, team_rect)
 
@@ -445,3 +515,271 @@ class UIManager:
         exit_surface = self.small_font.render(exit_text, True, self.GRAY)
         exit_rect = exit_surface.get_rect(center=(self.width // 2, 520))
         self.screen.blit(exit_surface, exit_rect)
+    
+    def draw_difficulty_selection(self, selected_index=0):
+        """Draw difficulty selection screen"""
+        self.draw_gradient_background(self.DARK_PURPLE, self.BLACK)
+        self.update_particles()
+        
+        # Title
+        title = self.title_font.render("PILIH KESULITAN", True, self.YELLOW)
+        title_rect = title.get_rect(center=(self.width // 2, 100))
+        
+        # Shadow effect
+        title_shadow = self.title_font.render("PILIH KESULITAN", True, (50, 50, 50))
+        shadow_rect = title_shadow.get_rect(center=(self.width // 2 + 3, 103))
+        self.screen.blit(title_shadow, shadow_rect)
+        self.screen.blit(title, title_rect)
+        
+        # Difficulty options
+        difficulties = [
+            {
+                "name": "MUDAH",
+                "desc": "30 detik • 2 ekspresi",
+                "color": self.GREEN,
+                "emoji": "😊"
+            },
+            {
+                "name": "SEDANG",
+                "desc": "20 detik • 4 ekspresi",
+                "color": self.YELLOW,
+                "emoji": "😐"
+            },
+            {
+                "name": "SULIT",
+                "desc": "15 detik • 4 ekspresi • Cepat!",
+                "color": self.RED,
+                "emoji": "😱"
+            }
+        ]
+        
+        y_offset = 220
+        for i, diff in enumerate(difficulties):
+            is_selected = (i == selected_index)
+            
+            # Box for difficulty
+            box_width = 500
+            box_height = 100
+            box_x = (self.width - box_width) // 2
+            box_y = y_offset + (i * 130)
+            
+            # Highlight selected
+            if is_selected:
+                # Animated border
+                border_color = diff["color"]
+                border_width = 5
+                glow_rect = pygame.Rect(box_x - 10, box_y - 10, 
+                                       box_width + 20, box_height + 20)
+                pygame.draw.rect(self.screen, border_color, glow_rect, 
+                               border_radius=15, width=border_width)
+            
+            # Draw box
+            box_rect = pygame.Rect(box_x, box_y, box_width, box_height)
+            box_surface = pygame.Surface((box_width, box_height), pygame.SRCALPHA)
+            pygame.draw.rect(box_surface, (30, 30, 30, 230), 
+                           box_surface.get_rect(), border_radius=15)
+            self.screen.blit(box_surface, box_rect)
+            
+            # Difficulty name
+            name_surface = self.large_font.render(diff["name"], True, diff["color"])
+            name_rect = name_surface.get_rect(left=box_x + 30, centery=box_y + 35)
+            self.screen.blit(name_surface, name_rect)
+            
+            # Description
+            desc_surface = self.small_font.render(diff["desc"], True, self.WHITE)
+            desc_rect = desc_surface.get_rect(left=box_x + 30, centery=box_y + 70)
+            self.screen.blit(desc_surface, desc_rect)
+            
+            # Emoji
+            emoji_surface = self.title_font.render(diff["emoji"], True, self.WHITE)
+            emoji_rect = emoji_surface.get_rect(right=box_x + box_width - 30, 
+                                               centery=box_y + 50)
+            self.screen.blit(emoji_surface, emoji_rect)
+        
+        # Instructions with icon
+        inst_y = self.height - 50
+        
+        # Calculate components
+        text_pilih = " untuk pilih • SPASI untuk mulai • L untuk Leaderboard • ESC untuk keluar"
+        text_pilih_surface = self.small_font.render(text_pilih, True, self.GRAY)
+        icon_width = 20 if self.icon_up_down else 0
+        total_width = icon_width + text_pilih_surface.get_width()
+        
+        start_x = (self.width - total_width) // 2
+        
+        # Draw up-down icon
+        if self.icon_up_down:
+            self.screen.blit(self.icon_up_down, (start_x, inst_y))
+            start_x += icon_width + 5
+        else:
+            # Fallback to text
+            fallback = self.small_font.render("↑↓", True, self.GRAY)
+            self.screen.blit(fallback, (start_x, inst_y))
+            start_x += fallback.get_width()
+        
+        # Draw rest of text
+        self.screen.blit(text_pilih_surface, (start_x, inst_y))
+    
+    def draw_leaderboard(self, leaderboard_manager, difficulty="medium"):
+        """Draw leaderboard screen"""
+        self.draw_gradient_background(self.DARK_PURPLE, self.BLACK)
+        self.update_particles()
+        
+        # Title
+        title = self.title_font.render("LEADERBOARD", True, self.YELLOW)
+        title_rect = title.get_rect(center=(self.width // 2, 80))
+        self.screen.blit(title, title_rect)
+        
+        # Difficulty tabs
+        difficulties = ["easy", "medium", "hard"]
+        diff_names = {"easy": "MUDAH", "medium": "SEDANG", "hard": "SULIT"}
+        diff_colors = {"easy": self.GREEN, "medium": self.YELLOW, "hard": self.RED}
+        
+        tab_y = 150
+        tab_width = 200
+        tab_spacing = 220
+        start_x = (self.width - (len(difficulties) * tab_spacing - 20)) // 2
+        
+        for i, diff in enumerate(difficulties):
+            tab_x = start_x + (i * tab_spacing)
+            is_active = (diff == difficulty)
+            
+            # Draw tab
+            tab_rect = pygame.Rect(tab_x, tab_y, tab_width, 50)
+            tab_color = diff_colors[diff] if is_active else self.GRAY
+            
+            if is_active:
+                pygame.draw.rect(self.screen, tab_color, tab_rect, border_radius=10)
+                text_color = self.BLACK
+            else:
+                pygame.draw.rect(self.screen, tab_color, tab_rect, 
+                               border_radius=10, width=3)
+                text_color = tab_color
+            
+            tab_text = self.medium_font.render(diff_names[diff], True, text_color)
+            tab_text_rect = tab_text.get_rect(center=tab_rect.center)
+            self.screen.blit(tab_text, tab_text_rect)
+        
+        # Get top scores
+        scores = leaderboard_manager.get_top_scores(difficulty, 10)
+        
+        # Draw scores table
+        table_y = 230
+        if scores:
+            for i, entry in enumerate(scores):
+                rank_y = table_y + (i * 45)
+                
+                # Rank colors
+                if i == 0:
+                    rank_color = self.YELLOW  # Gold
+                elif i == 1:
+                    rank_color = self.LIGHT_BLUE  # Silver
+                elif i == 2:
+                    rank_color = self.ORANGE  # Bronze
+                else:
+                    rank_color = self.WHITE
+                
+                # Rank
+                rank_text = f"#{i + 1}"
+                rank_surface = self.medium_font.render(rank_text, True, rank_color)
+                self.screen.blit(rank_surface, (150, rank_y))
+                
+                # Name
+                name_surface = self.medium_font.render(entry["name"], True, self.WHITE)
+                self.screen.blit(name_surface, (250, rank_y))
+                
+                # Score
+                score_text = f"{entry['score']} poin"
+                score_surface = self.medium_font.render(score_text, True, self.GREEN)
+                self.screen.blit(score_surface, (550, rank_y))
+                
+                # Date
+                date_surface = self.small_font.render(entry["date"], True, self.GRAY)
+                self.screen.blit(date_surface, (800, rank_y + 5))
+        else:
+            # No scores yet
+            no_scores = "Belum ada skor tercatat"
+            no_scores_surface = self.large_font.render(no_scores, True, self.GRAY)
+            no_scores_rect = no_scores_surface.get_rect(center=(self.width // 2, 400))
+            self.screen.blit(no_scores_surface, no_scores_rect)
+        
+        # Instructions
+        instructions = "1/2/3 untuk ganti difficulty • ESC untuk kembali"
+        inst_surface = self.small_font.render(instructions, True, self.GRAY)
+        inst_rect = inst_surface.get_rect(center=(self.width // 2, self.height - 50))
+        self.screen.blit(inst_surface, inst_rect)
+    
+    def draw_name_input(self, current_name=""):
+        """Draw name input screen"""
+        self.draw_gradient_background(self.DARK_PURPLE, self.BLACK)
+        self.update_particles()
+        
+        # Title
+        title = self.title_font.render("MASUKKAN NAMA", True, self.YELLOW)
+        title_rect = title.get_rect(center=(self.width // 2, 150))
+        
+        # Shadow
+        title_shadow = self.title_font.render("MASUKKAN NAMA", True, (50, 50, 50))
+        shadow_rect = title_shadow.get_rect(center=(self.width // 2 + 3, 153))
+        self.screen.blit(title_shadow, shadow_rect)
+        self.screen.blit(title, title_rect)
+        
+        # Subtitle
+        subtitle = "Nama kamu akan muncul di leaderboard!"
+        subtitle_surface = self.medium_font.render(subtitle, True, self.LIGHT_BLUE)
+        subtitle_rect = subtitle_surface.get_rect(center=(self.width // 2, 220))
+        self.screen.blit(subtitle_surface, subtitle_rect)
+        
+        # Input box
+        box_width = 600
+        box_height = 80
+        box_x = (self.width - box_width) // 2
+        box_y = 300
+        
+        # Box background with border
+        box_rect = pygame.Rect(box_x, box_y, box_width, box_height)
+        pygame.draw.rect(self.screen, self.YELLOW, box_rect, border_radius=15, width=4)
+        
+        box_surface = pygame.Surface((box_width, box_height), pygame.SRCALPHA)
+        pygame.draw.rect(box_surface, (40, 40, 40, 240), 
+                        box_surface.get_rect(), border_radius=15)
+        self.screen.blit(box_surface, box_rect)
+        
+        # Display current name or placeholder
+        display_text = current_name if current_name else "Ketik nama kamu..."
+        text_color = self.WHITE if current_name else self.GRAY
+        name_surface = self.large_font.render(display_text, True, text_color)
+        name_rect = name_surface.get_rect(center=(self.width // 2, box_y + 40))
+        self.screen.blit(name_surface, name_rect)
+        
+        # Blinking cursor
+        if current_name and int(pygame.time.get_ticks() / 500) % 2:
+            cursor_x = name_rect.right + 10
+            cursor_y = box_y + 20
+            pygame.draw.rect(self.screen, self.WHITE, (cursor_x, cursor_y, 3, 40))
+        
+        # Character limit indicator
+        limit_text = f"{len(current_name)}/15 karakter"
+        limit_color = self.RED if len(current_name) >= 15 else self.GRAY
+        limit_surface = self.small_font.render(limit_text, True, limit_color)
+        limit_rect = limit_surface.get_rect(center=(self.width // 2, box_y + box_height + 30))
+        self.screen.blit(limit_surface, limit_rect)
+        
+        # Instructions
+        instructions = [
+            "Ketik nama kamu (A-Z, 0-9, spasi)",
+            "ENTER untuk lanjut • BACKSPACE untuk hapus • ESC untuk skip"
+        ]
+        
+        inst_y = 450
+        for inst in instructions:
+            inst_surface = self.small_font.render(inst, True, self.GRAY)
+            inst_rect = inst_surface.get_rect(center=(self.width // 2, inst_y))
+            self.screen.blit(inst_surface, inst_rect)
+            inst_y += 35
+        
+        # Example names suggestion
+        examples = "Contoh: Player1, Falih, GamerPro"
+        example_surface = self.small_font.render(examples, True, self.CYAN)
+        example_rect = example_surface.get_rect(center=(self.width // 2, 550))
+        self.screen.blit(example_surface, example_rect)

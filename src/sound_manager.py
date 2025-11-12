@@ -33,11 +33,15 @@ class SoundManager:
             else:
                 print(f"Sound file not found: {filepath}")
 
-    def play(self, sound_name):
-        """Mainkan suara berdasarkan nama yang terdaftar."""
+    def play(self, sound_name, loops=0):
+        """Mainkan suara berdasarkan nama yang terdaftar.
+        Args:
+            sound_name: Nama suara yang akan dimainkan
+            loops: Jumlah pengulangan (-1 untuk loop tanpa batas, 0 untuk sekali)
+        """
         sound = self.sounds.get(sound_name)
         if sound:
-            sound.play()
+            sound.play(loops=loops)
         else:
             print(f"Sound '{sound_name}' tidak tersedia.")
 
