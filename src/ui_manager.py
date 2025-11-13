@@ -28,7 +28,21 @@ class UIManager:
         self.DARK_PURPLE = (45, 20, 70)
         self.LIGHT_BLUE = (135, 206, 250)
 
-        # Fonts
+        # Fonts - Try to load system fonts that support emoji
+        try:
+            # Try Segoe UI Emoji (Windows emoji font)
+            self.emoji_font = pygame.font.SysFont('segoeuiemoji', 72)
+            self.symbol_font = pygame.font.SysFont('segoeuiemoji', 28)
+        except:
+            try:
+                # Fallback to Segoe UI Symbol
+                self.emoji_font = pygame.font.SysFont('seguisym', 72)
+                self.symbol_font = pygame.font.SysFont('seguisym', 28)
+            except:
+                # Last resort fallback
+                self.emoji_font = pygame.font.Font(None, 72)
+                self.symbol_font = pygame.font.Font(None, 28)
+        
         self.title_font = pygame.font.Font(None, 92)
         self.large_font = pygame.font.Font(None, 56)
         self.medium_font = pygame.font.Font(None, 36)
@@ -432,8 +446,8 @@ class UIManager:
         pygame.draw.rect(self.screen, color, (x - 200, y - 25, 400, 50), 
                         width=3, border_radius=25)
         
-        # Text
-        text_surface = self.small_font.render(text, True, self.WHITE)
+        # Text - use symbol font for better unicode support
+        text_surface = self.symbol_font.render(text, True, self.WHITE)
         text_rect = text_surface.get_rect(center=(x, y))
         self.screen.blit(text_surface, text_rect)
     
@@ -769,12 +783,12 @@ class UIManager:
         
         # Restart button
         restart_y = controls_y
-        self.draw_fancy_button("▶ MAIN LAGI [SPASI]", self.width // 2, restart_y, 
+        self.draw_fancy_button("► MAIN LAGI [SPASI]", self.width // 2, restart_y, 
                               self.GREEN, 12 + button_pulse)
         
         # Exit button - adjusted spacing
         exit_y = restart_y + 55
-        self.draw_fancy_button("✕ KELUAR [ESC]", self.width // 2, exit_y, 
+        self.draw_fancy_button("✖ KELUAR [ESC]", self.width // 2, exit_y, 
                               self.RED, 8)
         
         # Floating confetti particles for high scores
@@ -872,8 +886,8 @@ class UIManager:
             desc_rect = desc_surface.get_rect(left=box_x + 30, centery=box_y + 70)
             self.screen.blit(desc_surface, desc_rect)
             
-            # Emoji
-            emoji_surface = self.title_font.render(diff["emoji"], True, self.WHITE)
+            # Emoji - using emoji font
+            emoji_surface = self.emoji_font.render(diff["emoji"], True, self.WHITE)
             emoji_rect = emoji_surface.get_rect(right=box_x + box_width - 30, 
                                                centery=box_y + 50)
             self.screen.blit(emoji_surface, emoji_rect)
