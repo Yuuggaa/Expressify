@@ -59,6 +59,18 @@ class GameLogic:
         self.game_duration = settings["duration"]
         self.expressions = settings["expressions"]
         self.cooldown = settings["cooldown"]
+    
+    def get_next_expression(self):
+        """Get a different expression from the current one"""
+        if len(self.expressions) <= 1:
+            # If only one expression available, return it
+            return self.expressions[0]
+        
+        # Get all expressions except the current one
+        available_expressions = [exp for exp in self.expressions if exp != self.current_expression]
+        
+        # Return random choice from available expressions
+        return random.choice(available_expressions)
 
     def start_game(self):
         """Start a new game"""
@@ -85,8 +97,8 @@ class GameLogic:
             if current_time - self.last_expression_time >= self.cooldown:
                 self.score += 1
                 self.last_expression_time = current_time
-                # Generate new challenge
-                self.current_expression = random.choice(self.expressions)
+                # Generate new challenge - make sure it's different from current
+                self.current_expression = self.get_next_expression()
                 return True
 
         return False
