@@ -96,7 +96,6 @@ class Expressify:
         if not ret:
             return
 
-        frame = cv2.flip(frame, 1)
         expression_detected = self.face_detector.detect_expression(frame)
         self.game_logic.update(expression_detected)
 
@@ -108,9 +107,10 @@ class Expressify:
             expression_detected,
         )
 
+
         if self.game_logic.is_game_over():
             self.game_state = "results"
-            self.sound_manager.stop("bgm")  # ✅ stop bgm saat game selesai
+            self.sound_manager.stop("bgm")
 
             # Save score to leaderboard with player name
             player_name = self.player_name if self.player_name else "Player"
@@ -182,6 +182,7 @@ class Expressify:
                 self.game_logic = GameLogic(difficulty=self.difficulty)
                 # Stop menu BGM before starting game
                 self.sound_manager.stop("bgm")
+                self.sound_manager.play("bgm", loops=-1)
                 self.game_state = "playing"
                 self.game_logic.start_game()
             elif key == pygame.K_ESCAPE:

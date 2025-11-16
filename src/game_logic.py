@@ -17,7 +17,7 @@ class GameLogic:
         self.current_expression = None
         self.start_time = None
         self.last_expression_time = None
-        self.expression_duration = 3  # seconds per expression
+        self.expression_duration = 1  # seconds per expression
         
         # Difficulty settings
         self.difficulty_settings = {

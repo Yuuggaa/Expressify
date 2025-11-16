@@ -491,7 +491,10 @@ class UIManager:
 
         # Convert OpenCV frame to Pygame surface
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame_surface = pygame.surfarray.make_surface(np.rot90(frame_rgb))
+        # Mirror horizontally so displayed camera behaves like a mirror
+        frame_rgb = np.fliplr(frame_rgb)
+        # Pygame surfarray expects (width, height, channels) ordering, so transpose axes
+        frame_surface = pygame.surfarray.make_surface(np.transpose(frame_rgb, (1, 0, 2)))
 
         # Scale and position camera feed
         camera_width = 640
@@ -530,7 +533,10 @@ class UIManager:
 
         # Convert OpenCV frame to Pygame surface
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        frame_surface = pygame.surfarray.make_surface(np.rot90(frame_rgb))
+        # Mirror horizontally so displayed camera behaves like a mirror
+        frame_rgb = np.fliplr(frame_rgb)
+        # Pygame surfarray expects (width, height, channels) ordering, so transpose axes
+        frame_surface = pygame.surfarray.make_surface(np.transpose(frame_rgb, (1, 0, 2)))
 
         # Scale and position camera feed
         camera_width = 640
