@@ -78,6 +78,10 @@ class UIManager:
         self.expression_images = {}
         self.load_expression_images()
         
+        # Floating images for game screen
+        self.floating_images = []
+        self.init_floating_images()
+        
     def load_expression_images(self):
         """Load expression images from assets folder"""
         # Mapping dari ekspresi game ke nama file foto
@@ -106,6 +110,67 @@ class UIManager:
                 placeholder = pygame.Surface((self.image_scale, self.image_scale))
                 placeholder.fill(self.PURPLE)
                 self.expression_images[expression] = placeholder
+    
+    def init_floating_images(self):
+        """Initialize floating expression images for game background"""
+        expressions = ["happy", "sad", "surprised", "neutral"]
+        for _ in range(8):  # 8 floating images
+            expression = random.choice(expressions)
+            self.floating_images.append({
+                'expression': expression,
+                'x': random.randint(0, self.width),
+                'y': random.randint(0, self.height),
+                'size': random.randint(40, 80),  # Small size
+                'speed': random.uniform(0.3, 0.8),
+                'direction': random.uniform(0, 2 * math.pi),
+                'rotation': random.uniform(0, 360),
+                'rotation_speed': random.uniform(-2, 2),
+                'alpha': random.randint(30, 80),  # Semi-transparent
+                'bob_offset': random.uniform(0, 2 * math.pi)  # For bobbing animation
+            })
+    
+    def update_floating_images(self):
+        """Update and draw floating expression images"""
+        for img in self.floating_images:
+            # Update position
+            img['x'] += math.cos(img['direction']) * img['speed']
+            img['y'] += math.sin(img['direction']) * img['speed']
+            
+            # Wrap around screen
+            if img['x'] < -100:
+                img['x'] = self.width + 100
+            elif img['x'] > self.width + 100:
+                img['x'] = -100
+            if img['y'] < -100:
+                img['y'] = self.height + 100
+            elif img['y'] > self.height + 100:
+                img['y'] = -100
+            
+            # Update rotation
+            img['rotation'] += img['rotation_speed']
+            
+            # Get expression image
+            if img['expression'] in self.expression_images:
+                original_image = self.expression_images[img['expression']]
+                
+                # Scale down the image
+                small_image = pygame.transform.scale(original_image, (img['size'], img['size']))
+                
+                # Apply rotation
+                rotated_image = pygame.transform.rotate(small_image, img['rotation'])
+                
+                # Create surface with alpha for transparency
+                alpha_surface = pygame.Surface(rotated_image.get_size(), pygame.SRCALPHA)
+                alpha_surface.blit(rotated_image, (0, 0))
+                alpha_surface.set_alpha(img['alpha'])
+                
+                # Add bobbing motion
+                bob = math.sin(self.animation_time * 0.5 + img['bob_offset']) * 8
+                
+                # Draw the floating image
+                final_x = int(img['x'] - rotated_image.get_width() // 2)
+                final_y = int(img['y'] + bob - rotated_image.get_height() // 2)
+                self.screen.blit(alpha_surface, (final_x, final_y))
     
     def draw_animated_expression_image(self, expression, x, y):
         """Draw expression image with swaying animation"""
@@ -241,6 +306,9 @@ class UIManager:
         
         # Update and draw particles
         self.update_particles()
+        
+        # Draw floating expression images in background
+        self.update_floating_images()
         
         # Draw decorative circles
         pulse = math.sin(self.menu_time) * 20
@@ -536,8 +604,12 @@ class UIManager:
 
     def draw_game(self, frame, current_challenge, score, remaining_time):
         """Draw game playing screen"""
-        self.screen.fill(self.BLACK)
-
+        # Draw soft gradient background (purple to dark blue)
+        self.draw_gradient_background((25, 20, 45), (15, 25, 50))
+        
+        # Draw subtle animated particles
+        self.update_particles()
+        
         # Convert OpenCV frame to Pygame surface
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         # Mirror horizontally so displayed camera behaves like a mirror
@@ -553,26 +625,60 @@ class UIManager:
         frame_surface = pygame.transform.scale(
             frame_surface, (camera_width, camera_height)
         )
+        
+        # Draw camera border with glow effect
+        for i in range(4, 0, -1):
+            glow_alpha = 30 - i * 5
+            glow_rect = pygame.Rect(camera_x - i * 2, camera_y - i * 2, 
+                                   camera_width + i * 4, camera_height + i * 4)
+            glow_surface = pygame.Surface((glow_rect.width, glow_rect.height), pygame.SRCALPHA)
+            pygame.draw.rect(glow_surface, (*self.CYAN, glow_alpha), 
+                           glow_surface.get_rect(), border_radius=15)
+            self.screen.blit(glow_surface, (glow_rect.x, glow_rect.y))
+        
+        # Draw camera feed
         self.screen.blit(frame_surface, (camera_x, camera_y))
+        
+        # Draw camera border
+        pygame.draw.rect(self.screen, self.CYAN, 
+                        (camera_x, camera_y, camera_width, camera_height), 
+                        width=3, border_radius=12)
 
         # Draw challenge text with emoji support
         self.draw_challenge_header(current_challenge)
 
-        # Draw score
+        # Draw score with background panel
         score_text = f"Skor: {score}"
+        score_bg = pygame.Surface((180, 50), pygame.SRCALPHA)
+        pygame.draw.rect(score_bg, (30, 25, 50, 200), score_bg.get_rect(), border_radius=10)
+        pygame.draw.rect(score_bg, self.GREEN, score_bg.get_rect(), width=2, border_radius=10)
+        self.screen.blit(score_bg, (30, 20))
         score_surface = self.medium_font.render(score_text, True, self.GREEN)
         self.screen.blit(score_surface, (50, 30))
 
-        # Draw timer
+        # Draw timer with background panel
         time_text = f"Waktu: {int(remaining_time)}s"
-        time_color = self.RED if remaining_time < 5 else self.WHITE
+        time_color = self.RED if remaining_time < 5 else self.CYAN
+        time_bg = pygame.Surface((200, 50), pygame.SRCALPHA)
+        border_color = self.RED if remaining_time < 5 else self.CYAN
+        pygame.draw.rect(time_bg, (30, 25, 50, 200), time_bg.get_rect(), border_radius=10)
+        pygame.draw.rect(time_bg, border_color, time_bg.get_rect(), width=2, border_radius=10)
+        time_bg_rect = time_bg.get_rect(topright=(self.width - 30, 20))
+        self.screen.blit(time_bg, time_bg_rect)
         time_surface = self.medium_font.render(time_text, True, time_color)
         time_rect = time_surface.get_rect(topright=(self.width - 50, 30))
         self.screen.blit(time_surface, time_rect)
 
     def draw_game_with_debug(self, frame, current_challenge, score, remaining_time, detected_expression):
         """Draw game playing screen with debug info"""
-        self.screen.fill(self.BLACK)
+        # Draw soft gradient background (purple to dark blue)
+        self.draw_gradient_background((25, 20, 45), (15, 25, 50))
+        
+        # Draw subtle animated particles
+        self.update_particles()
+        
+        # Draw floating expression images in background
+        self.update_floating_images()
 
         # Convert OpenCV frame to Pygame surface
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -589,7 +695,24 @@ class UIManager:
         frame_surface = pygame.transform.scale(
             frame_surface, (camera_width, camera_height)
         )
+        
+        # Draw camera border with glow effect
+        for i in range(4, 0, -1):
+            glow_alpha = 30 - i * 5
+            glow_rect = pygame.Rect(camera_x - i * 2, camera_y - i * 2, 
+                                   camera_width + i * 4, camera_height + i * 4)
+            glow_surface = pygame.Surface((glow_rect.width, glow_rect.height), pygame.SRCALPHA)
+            pygame.draw.rect(glow_surface, (*self.CYAN, glow_alpha), 
+                           glow_surface.get_rect(), border_radius=15)
+            self.screen.blit(glow_surface, (glow_rect.x, glow_rect.y))
+        
+        # Draw camera feed
         self.screen.blit(frame_surface, (camera_x, camera_y))
+        
+        # Draw camera border
+        pygame.draw.rect(self.screen, self.CYAN, 
+                        (camera_x, camera_y, camera_width, camera_height), 
+                        width=3, border_radius=12)
 
         # Draw animated expression images on both sides
         if current_challenge:
@@ -606,23 +729,33 @@ class UIManager:
         # Draw challenge text with emoji support
         self.draw_challenge_header(current_challenge)
 
-        # Draw score
+        # Draw score with background panel
         score_text = f"Skor: {score}"
+        score_bg = pygame.Surface((180, 50), pygame.SRCALPHA)
+        pygame.draw.rect(score_bg, (30, 25, 50, 200), score_bg.get_rect(), border_radius=10)
+        pygame.draw.rect(score_bg, self.GREEN, score_bg.get_rect(), width=2, border_radius=10)
+        self.screen.blit(score_bg, (30, 20))
         score_surface = self.medium_font.render(score_text, True, self.GREEN)
         self.screen.blit(score_surface, (50, 30))
 
-        # Draw timer
+        # Draw timer with background panel
         time_text = f"Waktu: {int(remaining_time)}s"
-        time_color = self.RED if remaining_time < 5 else self.WHITE
+        time_color = self.RED if remaining_time < 5 else self.CYAN
+        time_bg = pygame.Surface((200, 50), pygame.SRCALPHA)
+        border_color = self.RED if remaining_time < 5 else self.CYAN
+        pygame.draw.rect(time_bg, (30, 25, 50, 200), time_bg.get_rect(), border_radius=10)
+        pygame.draw.rect(time_bg, border_color, time_bg.get_rect(), width=2, border_radius=10)
+        time_bg_rect = time_bg.get_rect(topright=(self.width - 30, 20))
+        self.screen.blit(time_bg, time_bg_rect)
         time_surface = self.medium_font.render(time_text, True, time_color)
         time_rect = time_surface.get_rect(topright=(self.width - 50, 30))
         self.screen.blit(time_surface, time_rect)
 
         # DEBUG: Draw detected expression
-        detected_text = f"Terdeteksi: {detected_expression}"
-        detected_color = self.GREEN if detected_expression == current_challenge else self.RED
-        detected_surface = self.medium_font.render(detected_text, True, detected_color)
-        self.screen.blit(detected_surface, (50, 70))
+        # detected_text = f"Terdeteksi: {detected_expression}"
+        # detected_color = self.GREEN if detected_expression == current_challenge else self.RED
+        # detected_surface = self.medium_font.render(detected_text, True, detected_color)
+        # self.screen.blit(detected_surface, (50, 70))
 
         # DEBUG: Draw expression indicator with text
         expression_labels = {
@@ -631,11 +764,12 @@ class UIManager:
             'surprised': 'KAGET',
             'neutral': 'NETRAL'
         }
-        label = expression_labels.get(detected_expression, 'TIDAK DIKETAHUI')
-        emoji_text = f"Ekspresi: {label}"
-        emoji_surface = self.large_font.render(emoji_text, True, self.WHITE)
-        emoji_rect = emoji_surface.get_rect(topright=(self.width - 50, 70))
-        self.screen.blit(emoji_surface, emoji_rect)
+        #(debug expresi)
+        # label = expression_labels.get(detected_expression, 'TIDAK DIKETAHUI')
+        # emoji_text = f"Ekspresi: {label}"
+        # emoji_surface = self.large_font.render(emoji_text, True, self.WHITE)
+        # emoji_rect = emoji_surface.get_rect(topright=(self.width - 50, 70))
+        # self.screen.blit(emoji_surface, emoji_rect)
 
     def draw_results(self, score, max_score):
         """Draw enhanced results screen with animations"""
