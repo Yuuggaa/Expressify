@@ -5,7 +5,7 @@ Handles game state, scoring, and expression challenges
 
 import random
 import time
-
+from sound_manager import SoundManager
 
 class GameLogic:
     def __init__(self, game_duration=20, difficulty="medium"):
@@ -18,6 +18,7 @@ class GameLogic:
         self.start_time = None
         self.last_expression_time = None
         self.expression_duration = 1  # seconds per expression
+        self.sound_manager = SoundManager()
         
         # Difficulty settings
         self.difficulty_settings = {
@@ -95,6 +96,7 @@ class GameLogic:
         if detected_expression == self.current_expression:
             # Check if enough time has passed since last score (based on difficulty)
             if current_time - self.last_expression_time >= self.cooldown:
+                self.sound_manager.play("true_answer")
                 self.score += 1
                 self.last_expression_time = current_time
                 # Generate new challenge - make sure it's different from current
