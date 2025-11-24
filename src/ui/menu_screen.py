@@ -33,13 +33,17 @@ class MenuScreen:
     
     def load_icons(self):
         """Load UI icons"""
+        # Get path to assets folder (up from ui/ to src/ to root/ then to assets/)
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        images_dir = os.path.join(os.path.dirname(current_dir), "assets", "images")
+        src_dir = os.path.dirname(current_dir)
+        root_dir = os.path.dirname(src_dir)
+        images_dir = os.path.join(root_dir, "assets", "images")
         
         try:
             self.icon_exchange = pygame.image.load(os.path.join(images_dir, "exchange.png"))
             self.icon_exchange = pygame.transform.scale(self.icon_exchange, (20, 20))
-        except:
+        except Exception as e:
+            print(f"⚠ Failed to load exchange icon: {e}")
             self.icon_exchange = None
     
     def draw(self, screen, selected_index=0):

@@ -164,12 +164,28 @@ class FloatingImageSystem:
                 )
             )
     
-    def update_and_draw(self, screen, expression_images):
-        """Update and draw floating images"""
+    def update_and_draw(self, screen, expression_images, exclude_area=None):
+        """
+        Update and draw floating images
+        
+        Args:
+            screen: Pygame screen surface
+            expression_images: Dictionary of expression images
+            exclude_area: Optional tuple (x, y, width, height) to exclude from rendering
+        """
         self.animation_time += 0.1
         
         for img in self.floating_images:
             img.update(self.width, self.height)
+            
+            # Check if image is in excluded area (e.g., camera feed area)
+            if exclude_area:
+                ex, ey, ew, eh = exclude_area
+                # Add margin to avoid images appearing at the edge
+                margin = 50
+                if (ex - margin <= img.x <= ex + ew + margin and 
+                    ey - margin <= img.y <= ey + eh + margin):
+                    continue  # Skip rendering this image
             
             # Get expression image
             if img.expression in expression_images:

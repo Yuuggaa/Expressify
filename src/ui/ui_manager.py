@@ -98,6 +98,13 @@ class UIManager:
             self.screen, frame, current_challenge, score, remaining_time
         )
         self.particle_system.update_and_draw(self.screen)
+        # Pass camera area to avoid floating images overlapping the camera feed
+        camera_area = self.game_screen.get_camera_area()
+        self.floating_image_system.update_and_draw(
+            self.screen,
+            self.image_manager.get_expression_images(),
+            exclude_area=camera_area
+        )
     
     def draw_game_with_debug(self, frame, current_challenge, score, remaining_time, detected_expression):
         """
@@ -115,9 +122,12 @@ class UIManager:
             remaining_time, detected_expression, self.image_manager
         )
         self.particle_system.update_and_draw(self.screen)
+        # Pass camera area to avoid floating images overlapping the camera feed
+        camera_area = self.game_screen.get_camera_area()
         self.floating_image_system.update_and_draw(
             self.screen,
-            self.image_manager.get_expression_images()
+            self.image_manager.get_expression_images(),
+            exclude_area=camera_area
         )
     
     def draw_results(self, score, max_score):

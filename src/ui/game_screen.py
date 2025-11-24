@@ -78,6 +78,19 @@ class GameScreen:
         # Draw timer panel
         self._draw_timer_panel(screen, remaining_time)
     
+    def get_camera_area(self):
+        """
+        Get the camera feed area coordinates
+        
+        Returns:
+            tuple: (x, y, width, height) of camera area
+        """
+        camera_width = self.dimensions.CAMERA_WIDTH
+        camera_height = self.dimensions.CAMERA_HEIGHT
+        camera_x = (self.width - camera_width) // 2
+        camera_y = 120
+        return (camera_x, camera_y, camera_width, camera_height)
+    
     def _draw_camera_feed(self, screen, frame):
         """Draw camera feed with border"""
         # Convert OpenCV frame to Pygame surface
