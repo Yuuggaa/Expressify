@@ -2,7 +2,7 @@ import cv2
 import pygame
 from face_detector import FaceDetector
 from game_logic import GameLogic
-from ui_manager import UIManager
+from ui import UIManager
 from sound_manager import SoundManager
 from leaderboard_manager import LeaderboardManager
 
