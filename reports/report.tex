@@ -1,0 +1,489 @@
+\documentclass[11pt,a4paper]{article}
+%%%%%%%%%%%%%%%%%%%%%%%%% Credit %%%%%%%%%%%%%%%%%%%%%%%%
+
+% template ini dibuat oleh martin.manullang@if.itera.ac.id untuk dipergunakan oleh seluruh sivitas akademik itera.
+
+%%%%%%%%%%%%%%%%%%%%%%%%% PACKAGE starts HERE %%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{graphicx}
+\usepackage{caption}
+\captionsetup[table]{name=Tabel}
+\captionsetup[figure]{name=Gambar}
+\usepackage{tabulary}
+\usepackage{minted}
+% \usepackage{amsmath}
+\usepackage{fancyhdr}
+% \usepackage{amssymb}
+% \usepackage{amsthm}
+\usepackage{placeins}
+% \usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage[all]{xy}
+\usepackage{tikz}
+\usepackage{verbatim}
+\usepackage[left=2cm,right=2cm,top=3cm,bottom=2.5cm]{geometry}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks,
+    linkcolor={red!50!black},
+    citecolor={blue!50!black},
+    urlcolor={blue!80!black}
+}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{multirow}
+\usepackage{psfrag}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+% Fix for beramono font expansion issue
+\usepackage[scaled]{beramono}
+\usepackage[expansion=false]{microtype}
+% Enable inserting code into the document
+\usepackage{listings}
+\usepackage{xcolor} 
+% custom color & style for listing
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{LightGray}{gray}{0.9}
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{green},
+	keywordstyle=\color{codegreen},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2
+}
+\lstset{style=mystyle}
+\renewcommand{\lstlistingname}{Kode}
+%%%%%%%%%%%%%%%%%%%%%%%%% PACKAGE ends HERE %%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Data Diri %%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\student}{\textbf{Bayu Ega Ferdana, Hamka Putra Andiyan, Falih Dzakwan Zuhdi}}
+\newcommand{\course}{\textbf{Sistem Teknologi Multimedia (IF25-40305)}}
+\newcommand{\assignment}{\textbf{Final Project Report}}
+
+%%%%%%%%%%%%%%%%%%% using theorem style %%%%%%%%%%%%%%%%%%%%
+\newtheorem{thm}{Theorem}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{exa}[thm]{Example}
+\newtheorem{rem}[thm]{Remark}
+\newtheorem{coro}[thm]{Corollary}
+\newtheorem{quest}{Question}[section]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{lipsum}%% a garbage package you don't need except to create examples.
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{Expressify Development Team}
+\rhead{ \thepage}
+\cfoot{\textbf{Expressify: Facial Expression Recognition Game}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+%%%%%%%%%%%%%%  Shortcut for usual set of numbers  %%%%%%%%%%%
+
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\setlength\headheight{14pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%555
+\begin{document}
+\thispagestyle{empty}
+\begin{center}
+	\includegraphics[scale = 0.15]{Figure/ifitera-header.png}
+	\vspace{0.1cm}
+\end{center}
+\noindent
+\rule{17cm}{0.2cm}\\[0.3cm]
+Nama: \student \hfill Tugas : \assignment\\[0.1cm]
+Mata Kuliah: \course \hfill Tanggal: 26 November 2025\\
+\rule{17cm}{0.05cm}
+\vspace{0.1cm}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BODY DOCUMENT %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Pendahuluan}
+
+\subsection{Latar Belakang}
+Ekspresi wajah merupakan salah satu bentuk komunikasi non-verbal yang paling penting dalam interaksi manusia \cite{Ekman1992}. Dengan perkembangan teknologi Computer Vision dan Machine Learning, deteksi ekspresi wajah telah menjadi area penelitian yang menarik dengan berbagai aplikasi praktis.
+
+\textbf{Expressify} adalah sebuah game interaktif yang memanfaatkan teknologi face detection dan expression recognition untuk menciptakan pengalaman bermain yang unik. Game ini menantang pemain untuk meniru berbagai ekspresi wajah (senang, sedih, kaget, dan datar) dalam batas waktu tertentu, dengan sistem penilaian otomatis berbasis landmark detection.
+
+\subsection{Tujuan Proyek}
+Proyek ini bertujuan untuk:
+\begin{itemize}
+    \item Mengembangkan sistem deteksi ekspresi wajah real-time menggunakan MediaPipe Face Mesh \cite{Lugaresi2019} \cite{MediaPipe2023, Lugaresi2019}
+    \item Menciptakan game interaktif yang edukatif dan menghibur
+    \item Mengimplementasikan arsitektur modular untuk maintainability dan scalability
+    \item Menyediakan user experience yang smooth dengan visual effects dan audio feedback
+\end{itemize}
+
+\subsection{Fitur Utama}
+\begin{enumerate}
+    \item \textbf{Real-time Face Detection}: Deteksi wajah menggunakan 478 facial landmarks
+    \item \textbf{Expression Recognition}: Mendeteksi 4 ekspresi dasar (Happy, Sad, Surprised, Neutral)
+    \item \textbf{Multi-level Difficulty}: 3 tingkat kesulitan dengan durasi dan jumlah ekspresi berbeda
+    \item \textbf{Leaderboard System}: Top 10 scores untuk setiap difficulty level
+    \item \textbf{Modular UI Architecture}: 11 module terpisah untuk maintainability optimal
+    \item \textbf{Visual \& Audio Effects}: Particle systems, animations, dan sound feedback
+\end{enumerate}
+
+\section{Arsitektur Sistem}
+
+\subsection{Teknologi yang Digunakan}
+Proyek Expressify menggunakan beberapa teknologi utama sebagai berikut:
+
+\begin{table}[h]
+\caption{Teknologi dan Versi}
+\label{tab-teknologi}
+\centering
+\begin{tabular}{|l|l|p{7cm}|}
+\hline
+\textbf{Teknologi} & \textbf{Versi} & \textbf{Fungsi} \\ \hline
+Python \cite{PythonDocs2024} & 3.8+ & Programming language utama \\ \hline
+MediaPipe \cite{MediaPipe2023} & 0.10.14 & Face mesh detection dengan 478 landmarks \\ \hline
+OpenCV \cite{OpenCV2024} & 4.10.0.84 & Computer vision dan camera capture \\ \hline
+Pygame \cite{Pygame2024} & 2.6.0 & Game engine dan UI rendering \\ \hline
+NumPy \cite{NumPy2024} & 1.26.4 & Numerical computation untuk landmark analysis \\ \hline
+Pillow & 10.4.0 & Image processing dan manipulation \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Struktur Project}
+Project Expressify menggunakan arsitektur modular dengan struktur sebagai berikut:
+
+\begin{lstlisting}[language=bash, caption=Struktur Folder Utama,label={struktur-folder}]
+Expressify/
+|-- src/                    # Source code utama
+|   |-- main.py            # Entry point & game controller
+|   |-- face_detector.py   # MediaPipe face detection
+|   |-- game_logic.py      # Game rules & scoring
+|   |-- sound_manager.py   # Audio system
+|   |-- leaderboard_manager.py  # Score persistence
+|   +-- ui/                # Modular UI components (11 modules)
+|-- assets/                # Game assets (images, sounds, photos)
+|-- docs/                  # Documentation
+|-- reports/               # Project reports (LaTeX)
++-- requirements.txt       # Python dependencies
+\end{lstlisting}
+
+\subsection{Arsitektur UI Modular}
+Salah satu keunggulan Expressify adalah arsitektur UI yang modular. UI manager yang awalnya monolithic (650+ lines) telah di-refactor menjadi 11 module terpisah untuk meningkatkan maintainability:
+
+\begin{itemize}
+    \item \textbf{ui\_manager.py}: Main orchestrator yang mengkoordinasikan semua UI components
+    \item \textbf{constants.py}: Configuration (Colors, Dimensions, FontManager)
+    \item \textbf{base\_renderer.py}: Reusable rendering utilities (gradients, text effects)
+    \item \textbf{animations.py}: Animation systems (ParticleSystem, FloatingImages, Confetti)
+    \item \textbf{image\_manager.py}: Expression image loading \& rendering
+    \item \textbf{menu\_screen.py}: Main menu screen renderer
+    \item \textbf{game\_screen.py}: Game playing screen renderer
+    \item \textbf{results\_screen.py}: Results \& ranking screen renderer
+    \item \textbf{other\_screens.py}: Additional screens (Difficulty, Leaderboard, NameInput)
+\end{itemize}
+
+\section{Implementasi}
+
+\subsection{Face Detection dengan MediaPipe}
+Sistem deteksi wajah menggunakan MediaPipe Face Mesh yang menyediakan 478 facial landmarks. Berikut adalah implementasi deteksi ekspresi:
+
+\begin{lstlisting}[language=Python, caption=Face Detector Implementation,label={face-detector}]
+class FaceDetector:
+    def __init__(self):
+        self.mp_face_mesh = mp.solutions.face_mesh
+        self.face_mesh = self.mp_face_mesh.FaceMesh(
+            max_num_faces=1,
+            refine_landmarks=True,
+            min_detection_confidence=0.5,
+            min_tracking_confidence=0.5
+        )
+    
+    def detect_expression(self, landmarks):
+        # Mouth landmarks untuk deteksi ekspresi
+        mouth_top = landmarks[13].y
+        mouth_bottom = landmarks[14].y
+        mouth_left = landmarks[61].x
+        mouth_right = landmarks[291].x
+        
+        # Eye landmarks untuk deteksi kaget
+        left_eye_top = landmarks[159].y
+        left_eye_bottom = landmarks[145].y
+        
+        # Hitung mouth openness dan aspect ratio
+        mouth_height = abs(mouth_bottom - mouth_top)
+        mouth_width = abs(mouth_right - mouth_left)
+        mouth_aspect_ratio = mouth_height / mouth_width
+        
+        # Deteksi ekspresi berdasarkan geometri
+        if mouth_aspect_ratio > 0.35:
+            return "surprised"  # Mulut terbuka lebar
+        elif mouth_top < mouth_bottom - 0.02:
+            return "happy"      # Sudut mulut naik
+        elif mouth_top > mouth_bottom + 0.01:
+            return "sad"        # Sudut mulut turun
+        else:
+            return "neutral"    # Wajah rileks
+\end{lstlisting}
+
+\subsection{Game Logic dan Scoring System}
+Game logic mengatur flow permainan dan sistem penilaian:
+
+\begin{lstlisting}[language=Python, caption=Game Logic Core,label={game-logic}]
+class GameLogic:
+    DIFFICULTY_SETTINGS = {
+        "Mudah": {"duration": 30, "expressions": 2},
+        "Menengah": {"duration": 20, "expressions": 4},
+        "Sulit": {"duration": 15, "expressions": 4}
+    }
+    
+    def calculate_score(self, correct_count, total_count):
+        """Calculate score percentage"""
+        if total_count == 0:
+            return 0
+        return int((correct_count / total_count) * 100)
+    
+    def get_rank(self, percentage):
+        """Determine rank based on score percentage"""
+        if percentage >= 80:
+            return "S"  # Luar Biasa
+        elif percentage >= 60:
+            return "A"  # Bagus Sekali
+        elif percentage >= 40:
+            return "B"  # Cukup Baik
+        else:
+            return "C"  # Terus Berlatih
+\end{lstlisting}
+
+\subsection{Modular UI Architecture}
+Implementasi modular UI memisahkan concerns dan meningkatkan reusability:
+
+\begin{lstlisting}[language=Python, caption=UI Manager Orchestration,label={ui-manager}]
+class UIManager:
+    def __init__(self, screen):
+        self.screen = screen
+        
+        # Initialize all subsystems
+        self.menu_screen = MenuScreen(screen)
+        self.game_screen = GameScreen(screen)
+        self.results_screen = ResultsScreen(screen)
+        self.difficulty_screen = DifficultyScreen(screen)
+        self.leaderboard_screen = LeaderboardScreen(screen)
+        self.name_input_screen = NameInputScreen(screen)
+        
+        # Animation systems
+        self.particle_system = ParticleSystem()
+        self.floating_image_system = FloatingImageSystem()
+        self.confetti_system = ConfettiSystem()
+    
+    def draw(self, state, game_data):
+        """Delegate rendering to appropriate screen"""
+        if state == "menu":
+            self.menu_screen.draw()
+        elif state == "game":
+            camera_area = self.game_screen.get_camera_area()
+            self.particle_system.update_and_draw(
+                self.screen, 
+                exclude_area=camera_area
+            )
+            self.game_screen.draw(game_data)
+        # ... other states
+\end{lstlisting}
+
+\subsection{Visual Effects dan Animations}
+Sistem animasi menciptakan pengalaman visual yang menarik:
+
+\begin{lstlisting}[language=Python, caption=Particle System Implementation,label={particles}]
+class ParticleSystem:
+    def __init__(self):
+        self.particles = []
+    
+    def add_particle(self, x, y, color):
+        self.particles.append({
+            'x': x, 'y': y,
+            'vx': random.uniform(-2, 2),
+            'vy': random.uniform(-3, -1),
+            'color': color,
+            'life': 60,  # frames
+            'size': random.randint(3, 8)
+        })
+    
+    def update_and_draw(self, screen, exclude_area=None):
+        for particle in self.particles[:]:
+            # Update position
+            particle['x'] += particle['vx']
+            particle['y'] += particle['vy']
+            particle['vy'] += 0.2  # gravity
+            particle['life'] -= 1
+            
+            # Check exclusion zone (avoid camera area)
+            if exclude_area and self.in_exclusion_zone(
+                particle, exclude_area
+            ):
+                continue
+            
+            # Draw particle
+            alpha = int(255 * (particle['life'] / 60))
+            pygame.draw.circle(screen, particle['color'], 
+                (int(particle['x']), int(particle['y'])), 
+                particle['size'])
+\end{lstlisting}
+
+\section{Fitur-Fitur Game}
+
+\subsection{Sistem Difficulty}
+Game menyediakan 3 tingkat kesulitan dengan karakteristik berbeda:
+
+\begin{table}[h]
+\caption{Pengaturan Difficulty Level}
+\label{tab-difficulty}
+\centering
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Difficulty} & \textbf{Durasi (s)} & \textbf{Jumlah Ekspresi} & \textbf{Challenge} \\ \hline
+Mudah & 30 & 2 & Waktu santai \\ \hline
+Menengah & 20 & 4 & Balanced challenge \\ \hline
+Sulit & 15 & 4 & Time pressure \\ \hline
+\end{tabular}
+\end{table}
+
+\subsection{Sistem Ranking dan Leaderboard}
+Sistem ranking menggunakan grade S, A, B, C dengan visual yang menarik:
+
+\begin{itemize}
+    \item \textbf{Rank S} ($\geq$ 80\%): "LUAR BIASA!" - Gold color dengan 5 bintang
+    \item \textbf{Rank A} (60-79\%): "BAGUS SEKALI!" - Silver color dengan 4 bintang
+    \item \textbf{Rank B} (40-59\%): "CUKUP BAIK!" - Bronze color dengan 3 bintang
+    \item \textbf{Rank C} ($<$ 40\%): "TERUS BERLATIH!" - Gray color dengan 2 bintang
+\end{itemize}
+
+Leaderboard menyimpan top 10 scores untuk setiap difficulty level dengan format:
+
+\begin{lstlisting}[language=Python, caption=Leaderboard Data Structure,label={leaderboard}]
+{
+    "Mudah": [
+        {"name": "Player1", "score": 95, "rank": "S"},
+        {"name": "Player2", "score": 85, "rank": "S"},
+        ...
+    ],
+    "Menengah": [...],
+    "Sulit": [...]
+}
+\end{lstlisting}
+
+\subsection{Auto-Replay Feature}
+Setelah game selesai, pemain dapat:
+\begin{itemize}
+    \item Tekan \textbf{SPACE}: Langsung ke difficulty selection dengan nama tersimpan
+    \item Tekan \textbf{ESC}: Kembali ke menu utama (nama di-reset)
+\end{itemize}
+
+Fitur ini meningkatkan user experience dengan mengurangi repetitive input.
+
+\subsection{Exclusion Zones}
+Untuk menghindari overlap visual antara camera feed dengan UI elements, implementasi exclusion zones diterapkan:
+
+\begin{itemize}
+    \item \textbf{Particle Exclusion}: 30px margin dari camera area
+    \item \textbf{Floating Images Exclusion}: 50px margin dari camera area
+    \item \textbf{Rounded Camera Corners}: Border radius 12px untuk tampilan modern
+\end{itemize}
+
+\section{Testing dan Quality Assurance}
+
+\subsection{Testing Methodology}
+Testing dilakukan secara manual dengan fokus pada:
+\begin{enumerate}
+    \item \textbf{Functional Testing}: Memastikan semua fitur berjalan sesuai ekspektasi
+    \item \textbf{Usability Testing}: Menguji intuitivitas controls dan UI
+\end{enumerate}
+
+\subsection{Known Limitations}
+Beberapa limitasi yang teridentifikasi:
+\begin{itemize}
+    \item Akurasi deteksi sangat bergantung pada kondisi pencahayaan
+    \item Memerlukan webcam dengan resolusi minimal 640x480
+    \item Performa optimal pada single face detection
+    \item Ekspresi ekstrim dapat menghasilkan false detection
+\end{itemize}
+
+\subsection{Future Improvements}
+Rencana pengembangan ke depan:
+\begin{itemize}
+    \item Menambah variasi ekspresi (marah, takut, jijik)
+    \item Multiplayer mode dengan competitive scoring
+    \item Cross-platform deployment (mobile, web)
+    \item Cloud-based global leaderboard
+\end{itemize}
+
+\section{Kesimpulan}
+
+Expressify berhasil mengimplementasikan sistem facial expression recognition dalam bentuk game interaktif yang edukatif dan menghibur. Proyek ini mendemonstrasikan beberapa pencapaian penting:
+
+\begin{enumerate}
+    \item \textbf{Technical Achievement}: Integrasi sukses antara MediaPipe, OpenCV, dan Pygame untuk real-time face detection dan game rendering
+    
+    \item \textbf{Architectural Excellence}: Refactoring dari monolithic code (650+ lines) ke modular architecture (11 modules) yang meningkatkan maintainability dan scalability
+    
+    \item \textbf{User Experience}: Implementasi visual effects (particles, animations, rounded corners) dan audio feedback menciptakan pengalaman bermain yang engaging
+    
+    \item \textbf{Code Quality}: Clean code practices dengan separation of concerns, reusable components, dan clear dependencies
+    
+    \item \textbf{Feature Completeness}: Sistem ranking, leaderboard, multiple difficulty levels, dan auto-replay feature membuat game lebih kompetitif dan replayable
+\end{enumerate}
+
+Proyek ini membuktikan bahwa computer vision technology dapat diintegrasikan dengan game development untuk menciptakan aplikasi yang tidak hanya teknis kompleks, namun juga fun dan user-friendly. Arsitektur modular yang diterapkan memungkinkan pengembangan future features dengan effort minimal.
+
+\textbf{Lessons Learned}:
+\begin{itemize}
+    \item Modular architecture sangat penting untuk long-term maintainability
+    \item User experience details (animations, exclusion zones) membuat perbedaan signifikan
+    \item Testing iteratif membantu mengidentifikasi edge cases dalam face detection
+    \item Documentation dan clean code mempermudah collaboration dalam tim
+\end{itemize}
+
+Expressify adalah contoh sukses bagaimana teknologi AI dan Computer Vision dapat dikemas dalam format yang accessible dan entertaining untuk end users, sekaligus maintaining technical excellence dan code quality standards.
+
+\newpage
+\section*{Lampiran: Screenshots}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Figure/menu.png}
+    \caption{Main Menu}
+    \label{fig:menu}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Figure/gameplay.png}
+    \caption{Game Screen dengan Real-time Face Detection}
+    \label{fig:gameplay}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Figure/leaderboard.png}
+    \caption{Leaderboard Screen}
+    \label{fig:leaderboard}
+\end{figure}
+
+\newpage
+\bibliographystyle{IEEEtran}
+\bibliography{Referensi}
+\end{document}
