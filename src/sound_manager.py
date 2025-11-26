@@ -1,18 +1,25 @@
 from pathlib import Path
 import pygame
 import os
+import sys
 import numpy as np
 
 pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=512)
 pygame.init()
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
-ASSETS_DIR = PROJECT_ROOT / "assets" / "sounds"
+# Get base path for assets (works with PyInstaller)
+def get_base_path():
+    if getattr(sys, 'frozen', False):
+        return sys._MEIPASS
+    else:
+        return Path(__file__).resolve().parent.parent
+
+PROJECT_ROOT = get_base_path()
+ASSETS_DIR = os.path.join(PROJECT_ROOT, "assets", "sounds")
 
 class SoundManager:
     def __init__(self):
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        assets_dir = os.path.join(os.path.dirname(current_dir), "assets", "sounds")
+        assets_dir = ASSETS_DIR
 
         self.sounds = {}
         self.trimmed_sounds = {}  # Untuk menyimpan versi trimmed

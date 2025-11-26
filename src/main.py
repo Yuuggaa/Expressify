@@ -1,10 +1,25 @@
 import cv2
 import pygame
+import sys
+import os
 from face_detector import FaceDetector
 from game_logic import GameLogic
 from ui import UIManager
 from sound_manager import SoundManager
 from leaderboard_manager import LeaderboardManager
+
+# Get base path for assets (works with PyInstaller)
+def get_base_path():
+    """Get base path for assets, works in dev and frozen (exe) mode"""
+    if getattr(sys, 'frozen', False):
+        # Running as compiled executable
+        return sys._MEIPASS
+    else:
+        # Running in development
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Set base path globally
+BASE_PATH = get_base_path()
 
 # 💡 Inisialisasi mixer sebelum pygame.init()
 pygame.mixer.pre_init(44100, -16, 2, 512)

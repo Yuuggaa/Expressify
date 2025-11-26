@@ -419,6 +419,7 @@ Expressify/
 │   │   ├── upLow_score.wav
 │   │   └── low_score.wav
 │   ├── 🖼️ images/                   # UI icons
+│   │   ├── icon.ico                 # Application icon (Windows .exe)
 │   │   ├── exchange.png             # Navigation icon
 │   │   └── up-down.png              # Selection icon
 │   └── 📸 photo/                    # Expression reference images
@@ -428,6 +429,7 @@ Expressify/
 │       └── Datar.png                # Neutral expression
 │
 ├── 📂 docs/                         # Dokumentasi tambahan
+│   ├── BUILD_GUIDE.md               # Build executable guide
 │   ├── FEATURES.md                  # Detailed features
 │   ├── GAME_FLOW.md                 # Game flow diagram
 │   └── SOUND_GUIDE.md               # Audio setup guide
@@ -439,12 +441,19 @@ Expressify/
 │   ├── 📜 LICENSE                   # Template license
 │   └── 📂 Figure/                   # Report figures & images
 │
+├── 📂 scripts/                      # Build & utility scripts
+│   ├── 🔨 build_exe.bat             # Build portable .exe (Windows)
+│   ├── 🔨 build_exe_dir.bat         # Build install folder (Windows)
+│   ├── 🔨 build_both.bat            # Build both versions (Windows)
+│   └── 🎨 create_icon.py            # Generate icon.ico from PNG
+│
 ├── 📄 leaderboard.json              # Leaderboard data (auto-generated)
 ├── 📄 requirements.txt              # Python dependencies
 ├── 🚀 setup.bat                     # Windows installer
 ├── 🚀 setup.sh                      # Linux/Mac installer
 ├── 📋 .gitignore                    # Git ignore rules
 ├── 📖 README.md                     # Project documentation (this file)
+├── 📖 DOWNLOAD_README.md            # Download & usage guide for .exe
 ├── 📜 LICENSE                       # MIT License
 └── 🎮 QUICKSTART.md                 # Quick start guide
 ```
@@ -697,6 +706,38 @@ python -c "import pygame; pygame.mixer.init(); print('OK')"
 - ✨ [FEATURES.md](docs/FEATURES.md) - Detailed features list
 - 🎮 [GAME_FLOW.md](docs/GAME_FLOW.md) - Game state diagram
 - 🔊 [SOUND_GUIDE.md](docs/SOUND_GUIDE.md) - Audio setup guide
+- 🏗️ [BUILD_GUIDE.md](docs/BUILD_GUIDE.md) - Build executable guide
+
+### 📥 Download Executable
+
+**Mau main tanpa install Python?**
+
+Download versi executable (.exe):
+- 💾 [Expressify v1.0 - Windows](https://github.com/Yuuggaa/Expressify/releases)
+- 📖 [Download Guide](DOWNLOAD_README.md)
+
+Tinggal download, double-click, dan main! 🎮
+
+### 🔨 Build Your Own Executable
+
+Ingin build sendiri? Lihat panduan lengkap di [BUILD_GUIDE.md](docs/BUILD_GUIDE.md)
+
+**Quick Build (Windows):**
+```bash
+# Build portable .exe (single file)
+.\scripts\build_exe.bat
+
+# Build install version (folder)
+.\scripts\build_exe_dir.bat
+
+# Build both versions at once
+.\scripts\build_both.bat
+```
+
+**Output:**
+- `dist/Expressify.exe` - Portable version (~150-200 MB)
+- `dist/Expressify/` - Install version (~180 MB unzipped)
+- `dist/Expressify.zip` - Zipped install version (auto-created)
 
 ### 🔗 External Resources
 

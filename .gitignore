@@ -45,6 +45,13 @@ desktop.ini
 .cache/
 leaderboard.json
 
+# PyInstaller build files
+build/
+dist/
+*.spec
+*.manifest
+*.exe
+
 # LaTeX
 *.aux
 *.fdb_latexmk

@@ -431,6 +431,151 @@ Rencana pengembangan ke depan:
     \item Cloud-based global leaderboard
 \end{itemize}
 
+\section{Distribusi dan Deployment}
+
+\subsection{Package Requirements}
+Expressify menggunakan beberapa dependencies utama yang harus di-package dalam executable:
+
+\begin{itemize}
+    \item \textbf{MediaPipe} (0.10.0+): Face mesh detection dengan binary data files (.binarypb)
+    \item \textbf{OpenCV} (cv2): Image processing dan camera capture
+    \item \textbf{Pygame} (2.5.0+): Game engine, rendering, dan audio
+    \item \textbf{NumPy}: Numerical operations untuk landmark calculations
+    \item \textbf{Matplotlib}: Visualisasi data (hidden dependency)
+    \item \textbf{Pillow (PIL)}: Image loading dan processing
+\end{itemize}
+
+\subsection{PyInstaller Configuration}
+Untuk menghasilkan executable Windows (.exe), digunakan PyInstaller dengan konfigurasi khusus untuk mengatasi berbagai dependency issues:
+
+\begin{lstlisting}[language=Python, caption=PyInstaller Spec Configuration,label={pyinstaller-spec}]
+# Expressify.spec
+a = Analysis(
+    ['src/main.py'],
+    pathex=[],
+    binaries=[],
+    datas=[
+        ('assets', 'assets'),
+        ('src/ui', 'src/ui'),
+    ],
+    hiddenimports=[
+        'mediapipe', 'cv2', 'pygame', 'numpy', 
+        'PIL', 'matplotlib', 'matplotlib.pyplot'
+    ],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=[],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=None,
+    noarchive=False,
+)
+
+# Collect MediaPipe binary data files
+a.datas += collect_data_files('mediapipe')
+\end{lstlisting}
+
+\subsection{Asset Path Compatibility}
+Challenge utama dalam PyInstaller adalah path resolution untuk assets (images, sounds). Solusinya adalah implementasi helper function yang mendeteksi frozen state:
+
+\begin{lstlisting}[language=Python, caption=Asset Path Resolution,label={asset-path}]
+def get_base_path():
+    """Get base path for assets (works in dev and frozen mode)"""
+    if getattr(sys, 'frozen', False):
+        # Running as compiled executable
+        return sys._MEIPASS
+    else:
+        # Running in development
+        return os.path.dirname(os.path.abspath(__file__))
+
+# Usage in sound_manager.py
+ASSETS_DIR = os.path.join(get_base_path(), "assets", "sounds")
+
+# Usage in image_manager.py
+base_path = os.path.join(get_base_path(), "assets", "photo")
+\end{lstlisting}
+
+Function ini menggunakan \texttt{sys.\_MEIPASS} - temporary folder yang dibuat PyInstaller saat runtime untuk extract assets dari executable bundle.
+
+\subsection{Build Scripts}
+Untuk mempermudah build process, dibuat batch scripts dengan dua mode distribusi:
+
+\textbf{Portable Version (--onefile)}:
+\begin{itemize}
+    \item Single executable file (\textasciitilde 150-200 MB)
+    \item Slower startup (extract ke temp folder)
+    \item Ideal untuk quick distribution
+\end{itemize}
+
+\textbf{Install Version (--onedir)}:
+\begin{itemize}
+    \item Folder berisi executable + dependencies (\textasciitilde 180 MB)
+    \item Faster startup (no extraction needed)
+    \item Professional installation experience
+\end{itemize}
+
+\begin{lstlisting}[language=bash, caption=Build Script (build\_both.bat),label={build-script}]
+pyinstaller ^
+    --name="Expressify" ^
+    --onefile ^
+    --windowed ^
+    --icon="assets/images/icon.ico" ^
+    --add-data="assets;assets" ^
+    --add-data="src/ui;src/ui" ^
+    --hidden-import="mediapipe" ^
+    --collect-data="mediapipe" ^
+    --noconsole ^
+    src/main.py
+\end{lstlisting}
+
+\subsection{Icon Generation}
+Application icon dibuat dari emoji asset (Senang.png) menggunakan PIL:
+
+\begin{lstlisting}[language=Python, caption=Icon Generation Script,label={icon-gen}]
+from PIL import Image
+
+img = Image.open("assets/photo/Senang.png")
+icon_sizes = [(256,256), (128,128), (64,64), 
+              (48,48), (32,32), (16,16)]
+img.save("assets/images/icon.ico", 
+         format='ICO', sizes=icon_sizes)
+\end{lstlisting}
+
+Icon ini muncul di taskbar, file explorer, window title bar, dan desktop shortcuts, memberikan identitas visual yang konsisten untuk aplikasi.
+
+\subsection{Deployment Challenges \& Solutions}
+
+\begin{table}[h]
+\centering
+\caption{PyInstaller Challenges dan Solutions}
+\label{tab:deployment-issues}
+\begin{tabular}{|p{5cm}|p{8cm}|}
+\hline
+\textbf{Challenge} & \textbf{Solution} \\
+\hline
+MediaPipe .binarypb files missing & Add \texttt{collect\_data\_files('mediapipe')} \\
+\hline
+Matplotlib not found & Add to \texttt{hiddenimports} list \\
+\hline
+Assets not loading in exe & Implement \texttt{get\_base\_path()} with \texttt{sys.\_MEIPASS} \\
+\hline
+Large file size (200+ MB) & Expected due to MediaPipe + OpenCV binaries \\
+\hline
+Slow startup (onefile) & Offer onedir version for better performance \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Distribution Strategy}
+Final distribution melalui GitHub Releases dengan dua files:
+\begin{enumerate}
+    \item \textbf{Expressify-Portable.exe}: Single file untuk quick download
+    \item \textbf{Expressify-Install.zip}: Folder version dengan faster startup
+\end{enumerate}
+
+Kedua versi fully functional tanpa memerlukan Python installation, webcam drivers otomatis terdeteksi oleh OpenCV, dan game siap dimainkan setelah download.
+
 \section{Kesimpulan}
 
 Expressify berhasil mengimplementasikan sistem facial expression recognition dalam bentuk game interaktif yang edukatif dan menghibur. Proyek ini mendemonstrasikan beberapa pencapaian penting:

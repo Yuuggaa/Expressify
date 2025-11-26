@@ -3,8 +3,17 @@ Image Manager - Handles expression images and rendering
 """
 
 import os
+import sys
 import math
 import pygame
+
+
+def get_base_path():
+    """Get base path for assets"""
+    if getattr(sys, 'frozen', False):
+        return sys._MEIPASS
+    else:
+        return os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 
 class ImageManager:
@@ -33,10 +42,7 @@ class ImageManager:
         }
         
         # Get path to assets folder
-        base_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-            "assets", "photo"
-        )
+        base_path = os.path.join(get_base_path(), "assets", "photo")
         
         for expression, filename in image_mapping.items():
             image_path = os.path.join(base_path, filename)

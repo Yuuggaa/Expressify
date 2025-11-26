@@ -3,8 +3,17 @@ Difficulty and Other Screens - Additional game screens
 """
 
 import os
+import sys
 import math
 import pygame
+
+
+def get_base_path():
+    """Get base path for assets"""
+    if getattr(sys, 'frozen', False):
+        return sys._MEIPASS
+    else:
+        return os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 
 class DifficultyScreen:
@@ -32,11 +41,8 @@ class DifficultyScreen:
     
     def load_icons(self):
         """Load UI icons"""
-        # Get path to assets folder (up from ui/ to src/ to root/ then to assets/)
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        src_dir = os.path.dirname(current_dir)
-        root_dir = os.path.dirname(src_dir)
-        images_dir = os.path.join(root_dir, "assets", "images")
+        # Get path to assets folder
+        images_dir = os.path.join(get_base_path(), "assets", "images")
         
         try:
             self.icon_up_down = pygame.image.load(os.path.join(images_dir, "up-down.png"))
