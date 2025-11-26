@@ -28,9 +28,9 @@
 
 ### 🎯 Preview Game
 
-| Menu Utama | Gameplay | Leaderboard |
-|------------|----------|-------------|
-| ![Menu](assets/photo/Senang.png) | ![Game](assets/photo/Kaget.png) | ![Leaderboard](assets/photo/Sedih.png) |
+| Menu Utama                    | Gameplay                          | Leaderboard                                 |
+| ----------------------------- | --------------------------------- | ------------------------------------------- |
+| ![Menu](assets/game/menu.png) | ![Game](assets/game/gameplay.png) | ![Leaderboard](assets/game/leaderboard.png) |
 
 </div>
 
@@ -41,29 +41,35 @@ Game ini dikembangkan sebagai **Tugas Besar** untuk mata kuliah **Sistem Teknolo
 ## ✨ Fitur
 
 ### 🎮 Gameplay
+
 - 🎯 **Real-time Face Detection** - Deteksi wajah instan menggunakan MediaPipe Face Mesh (478 landmark points)
 - 😊 **4 Ekspresi Berbeda** - Happy, Sad, Surprised, Neutral dengan deteksi akurat
-- 🎚️ **3 Tingkat Kesulitan** 
+- 🎚️ **3 Tingkat Kesulitan**
   - 🟢 **Easy**: 30 detik, 2 ekspresi
-  - 🟡 **Medium**: 20 detik, 4 ekspresi  
+  - 🟡 **Medium**: 20 detik, 4 ekspresi
   - 🔴 **Hard**: 15 detik, 4 ekspresi (cooldown lebih cepat)
 
 ### 🏆 Sistem Kompetisi
+
 - 📊 **Leaderboard System** - Simpan top 10 scores untuk setiap tingkat kesulitan
 - 👤 **Player Profiles** - Nama pemain kustom (maksimal 15 karakter)
 - 📈 **Performance Metrics** - Feedback performa berdasarkan persentase skor
 
 ### 🎨 User Experience
+
 - 🖼️ **UI Interaktif** - Antarmuka modern dengan Pygame & animasi smooth
 - 🎵 **Audio Support** - Sound effects & background music (optional)
 - 🎨 **Visual Effects** - Particle system, gradient backgrounds, glow effects
 - 🌈 **Rainbow Animations** - Animated title dengan warna dinamis
 
 ### 🛠️ Teknis
+
 - ⚡ **Optimized Performance** - Target 30 FPS untuk gameplay yang smooth
 - 🎮 **Intuitive Controls** - Navigasi keyboard yang mudah dipahami
 - 💾 **Data Persistence** - Leaderboard tersimpan di JSON
 - 🔧 **Modular Architecture** - Clean code dengan separation of concerns
+- 📦 **Package Structure** - UI components organized in modular package
+- 🎨 **Reusable Components** - Shared rendering utilities across screens
 
 <div align="center">
 
@@ -100,11 +106,11 @@ Game ini dikembangkan sebagai **Tugas Besar** untuk mata kuliah **Sistem Teknolo
 
 <div align="center">
 
-| 👨‍💻 Developer | 🎯 Role | 📧 Contact |
-|--------------|---------|-----------|
-| **Hamka Putra Andiyan** | Lead Developer & Face Detection | [@hamka](https://github.com/HamkaHPA) |
-| **Bayu Ega Ferdana** | Game Logic & Sound System | [@bayu](https://github.com/Yuuggaa) |
-| **Falih Dzakwan Zuhdi** | Integration & UI Design | [@falih](https://github.com/falihdzakwanz) |
+| 👨‍💻 Developer            | 🎯 Role                         | 📧 Contact                                 |
+| ----------------------- | ------------------------------- | ------------------------------------------ |
+| **Hamka Putra Andiyan** | Lead Developer & Face Detection | [@hamka](https://github.com/HamkaHPA)      |
+| **Bayu Ega Ferdana**    | Game Logic & Sound System       | [@bayu](https://github.com/Yuuggaa)        |
+| **Falih Dzakwan Zuhdi** | Integration & UI Design         | [@falih](https://github.com/falihdzakwanz) |
 
 </div>
 
@@ -114,13 +120,13 @@ Game ini dikembangkan sebagai **Tugas Besar** untuk mata kuliah **Sistem Teknolo
 
 <div align="center">
 
-| Teknologi | Versi | Deskripsi |
-|-----------|-------|-----------|
-| ![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white) | 3.8+ | Core programming language |
+| Teknologi                                                                                                           | Versi   | Deskripsi                             |
+| ------------------------------------------------------------------------------------------------------------------- | ------- | ------------------------------------- |
+| ![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white)          | 3.8+    | Core programming language             |
 | ![MediaPipe](https://img.shields.io/badge/MediaPipe-0.10.14-00C853?style=for-the-badge&logo=google&logoColor=white) | 0.10.14 | Face Mesh untuk deteksi 478 landmarks |
-| ![OpenCV](https://img.shields.io/badge/OpenCV-4.10.0-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white) | 4.10.0 | Video capture & image processing |
-| ![Pygame](https://img.shields.io/badge/Pygame-2.6.0-FFD43B?style=for-the-badge&logo=python&logoColor=blue) | 2.6.0 | Game engine & UI rendering |
-| ![NumPy](https://img.shields.io/badge/NumPy-1.26.4-013243?style=for-the-badge&logo=numpy&logoColor=white) | 1.26.4 | Numerical computations |
+| ![OpenCV](https://img.shields.io/badge/OpenCV-4.10.0-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white)        | 4.10.0  | Video capture & image processing      |
+| ![Pygame](https://img.shields.io/badge/Pygame-2.6.0-FFD43B?style=for-the-badge&logo=python&logoColor=blue)          | 2.6.0   | Game engine & UI rendering            |
+| ![NumPy](https://img.shields.io/badge/NumPy-1.26.4-013243?style=for-the-badge&logo=numpy&logoColor=white)           | 1.26.4  | Numerical computations                |
 
 </div>
 
@@ -130,20 +136,49 @@ Game ini dikembangkan sebagai **Tugas Besar** untuk mata kuliah **Sistem Teknolo
 graph TB
     A[main.py<br/>Game Controller] --> B[face_detector.py<br/>MediaPipe Face Mesh]
     A --> C[game_logic.py<br/>Score & Timer]
-    A --> D[ui_manager.py<br/>Pygame Renderer]
+    A --> D[ui/<br/>Modular UI Package]
     A --> E[sound_manager.py<br/>Audio System]
     A --> F[leaderboard_manager.py<br/>JSON Storage]
-    
+
     B --> G[Camera Feed]
     C --> H[Expression Matching]
-    D --> I[Visual Effects]
-    E --> J[Sound Effects & BGM]
-    F --> K[leaderboard.json]
+    D --> I[Screen Renderers]
+    D --> J[Animation Systems]
+    E --> K[Sound Effects & BGM]
+    F --> L[leaderboard.json]
+
+    I --> M[Menu Screen]
+    I --> N[Game Screen]
+    I --> O[Results Screen]
+    J --> P[Particles]
+    J --> Q[Floating Images]
+```
+
+#### 🎨 UI Module Architecture
+
+```mermaid
+graph LR
+    A[UIManager<br/>Orchestrator] --> B[MenuScreen]
+    A --> C[GameScreen]
+    A --> D[ResultsScreen]
+    A --> E[OtherScreens]
+    A --> F[ImageManager]
+    A --> G[Animations]
+
+    B --> H[BaseRenderer]
+    C --> H
+    D --> H
+    E --> H
+
+    H --> I[Constants]
+    F --> I
+    G --> I
 ```
 
 ## 📋 Requirements
 
 ### System Requirements
+
 - 💻 **OS**: Windows 10/11, macOS, Linux
 - 🎥 **Webcam**: Built-in or external (minimum 480p)
 - 🐍 **Python**: 3.8 atau lebih baru
@@ -239,6 +274,7 @@ python src/main.py
 ### 🎵 Optional: Audio Assets
 
 Untuk pengalaman terbaik, tambahkan file audio di folder `assets/sounds/`:
+
 - `bgm.wav` - Background music untuk menu
 - `click.wav` - Sound effect untuk button click
 - `high_score.wav` - Sound untuk skor tinggi
@@ -268,15 +304,15 @@ python src/main.py
 
 <div align="center">
 
-| Tombol | Fungsi | Screen |
-|--------|--------|--------|
-| `←` `→` | Navigasi horizontal | Menu |
-| `↑` `↓` | Navigasi vertikal | Difficulty |
-| `SPACE` | Konfirmasi / Main lagi | All |
-| `ENTER` | Submit nama | Name Input |
-| `ESC` | Kembali / Keluar | All |
-| `1` `2` `3` | Ganti difficulty | Leaderboard |
-| `BACKSPACE` | Hapus karakter | Name Input |
+| Tombol      | Fungsi                 | Screen      |
+| ----------- | ---------------------- | ----------- |
+| `←` `→`     | Navigasi horizontal    | Menu        |
+| `↑` `↓`     | Navigasi vertikal      | Difficulty  |
+| `SPACE`     | Konfirmasi / Main lagi | All         |
+| `ENTER`     | Submit nama            | Name Input  |
+| `ESC`       | Kembali / Keluar       | All         |
+| `1` `2` `3` | Ganti difficulty       | Leaderboard |
+| `BACKSPACE` | Hapus karakter         | Name Input  |
 
 </div>
 
@@ -293,33 +329,38 @@ python src/main.py
 ### 🎮 Step by Step
 
 1. **🏠 Menu Utama**
+
    - Pilih **PLAY** untuk mulai bermain
    - Pilih **LEADERBOARD** untuk melihat top scores
    - Pilih **QUIT** untuk keluar
 
-2. **👤 Input Nama** 
+2. **👤 Input Nama**
+
    - Masukkan nama Anda (maksimal 15 karakter)
    - Nama akan muncul di leaderboard
    - Tekan `ENTER` untuk lanjut atau `ESC` untuk skip
 
 3. **🎚️ Pilih Kesulitan**
+
    - 🟢 **MUDAH**: 30 detik, 2 ekspresi (Happy & Sad)
    - 🟡 **SEDANG**: 20 detik, 4 ekspresi (semua)
    - 🔴 **SULIT**: 15 detik, 4 ekspresi (cooldown cepat)
 
 4. **🎮 Gameplay**
+
    - Lihat instruksi ekspresi di layar
    - Tunjukkan ekspresi yang diminta ke kamera
    - Skor bertambah jika ekspresi benar
    - Perhatikan timer - waktu terus berjalan!
 
 5. **📊 Results**
+
    - Lihat skor akhir dan performa Anda
    - Rating otomatis berdasarkan persentase:
-     - 🌟 **80%+**: LUAR BIASA!
-     - ⭐ **60-79%**: BAGUS SEKALI!
-     - ✨ **40-59%**: CUKUP BAIK!
-     - 💪 **<40%**: TERUS BERLATIH!
+     - 🏆 **Rank S** (80%+): LUAR BIASA! ⭐⭐⭐⭐⭐
+     - 🥇 **Rank A** (60-79%): BAGUS SEKALI! ⭐⭐⭐⭐
+     - 🥈 **Rank B** (40-59%): CUKUP BAIK! ⭐⭐⭐
+     - 🥉 **Rank C** (<40%): TERUS BERLATIH! ⭐
 
 6. **🏆 Leaderboard**
    - Top 10 pemain untuk setiap difficulty
@@ -350,36 +391,86 @@ Expressify/
 │   ├── 🎮 main.py                   # Entry point & game controller
 │   ├── 👁️ face_detector.py          # MediaPipe face detection
 │   ├── 🎯 game_logic.py             # Game rules & scoring
-│   ├── 🎨 ui_manager.py             # Pygame UI & rendering
 │   ├── 🔊 sound_manager.py          # Audio system
-│   └── 🏆 leaderboard_manager.py    # Score persistence
+│   ├── 🏆 leaderboard_manager.py    # Score persistence
+│   │
+│   └── 📂 ui/                       # Modular UI components
+│       ├── 🎨 ui_manager.py         # Main UI orchestrator
+│       ├── 🎭 constants.py          # Colors, fonts, dimensions
+│       ├── 🖌️ base_renderer.py      # Base rendering utilities
+│       ├── ✨ animations.py         # Particle & animation systems
+│       ├── 🖼️ image_manager.py      # Expression image loader
+│       ├── 🏠 menu_screen.py        # Main menu renderer
+│       ├── 🎮 game_screen.py        # Game screen renderer
+│       ├── 📊 results_screen.py     # Results screen renderer
+│       ├── 🎚️ other_screens.py      # Difficulty, leaderboard, name input
+│       ├── 📖 README.md             # UI module documentation
+│       ├── 📐 ARCHITECTURE.md       # UI architecture diagram
+│       └── 📦 __init__.py           # Package initialization
 │
 ├── 📂 assets/                       # Game assets
 │   ├── 🔊 sounds/                   # Audio files (optional)
 │   │   ├── bgm.wav
 │   │   ├── click.wav
-│   │   └── true_answer.wav
+│   │   ├── start.wav
+│   │   ├── true_answer.wav
+│   │   ├── high_score.wav
+│   │   ├── botHigh_score.wav
+│   │   ├── upLow_score.wav
+│   │   └── low_score.wav
 │   ├── 🖼️ images/                   # UI icons
-│   │   ├── exchange.png
-│   │   └── up-down.png
-│   └── 📸 photo/                    # Documentation images
-│       ├── Senang.png
-│       ├── Sedih.png
-│       ├── Kaget.png
-│       └── Datar.png
+│   │   ├── exchange.png             # Navigation icon
+│   │   └── up-down.png              # Selection icon
+│   └── 📸 photo/                    # Expression reference images
+│       ├── Senang.png               # Happy expression
+│       ├── Sedih.png                # Sad expression
+│       ├── Kaget.png                # Surprised expression
+│       └── Datar.png                # Neutral expression
 │
 ├── 📂 docs/                         # Dokumentasi tambahan
-│   ├── FEATURES.md
-│   ├── GAME_FLOW.md
-│   └── SOUND_GUIDE.md
+│   ├── FEATURES.md                  # Detailed features
+│   ├── GAME_FLOW.md                 # Game flow diagram
+│   └── SOUND_GUIDE.md               # Audio setup guide
 │
+├── 📂 reports/                      # Project reports & documentation
+│   ├── 📄 report.tex                # LaTeX project report
+│   ├── 📚 Referensi.bib             # Bibliography references
+│   ├── 📄 Readme.MD                 # Template usage guide
+│   ├── 📜 LICENSE                   # Template license
+│   └── 📂 Figure/                   # Report figures & images
+│
+├── 📄 leaderboard.json              # Leaderboard data (auto-generated)
 ├── 📄 requirements.txt              # Python dependencies
 ├── 🚀 setup.bat                     # Windows installer
 ├── 🚀 setup.sh                      # Linux/Mac installer
 ├── 📋 .gitignore                    # Git ignore rules
-├── 📖 README.md                     # Project documentation
+├── 📖 README.md                     # Project documentation (this file)
+├── 📜 LICENSE                       # MIT License
 └── 🎮 QUICKSTART.md                 # Quick start guide
 ```
+
+### 🏗️ UI Module Structure (Modular Architecture)
+
+```
+src/ui/
+├── ui_manager.py         # Main orchestrator - coordinates all UI components
+├── constants.py          # Configuration (Colors, Dimensions, FontManager)
+├── base_renderer.py      # Reusable rendering utilities (gradients, text effects)
+├── animations.py         # Animation systems (ParticleSystem, FloatingImages, Confetti)
+├── image_manager.py      # Expression image loading & rendering
+├── menu_screen.py        # Main menu screen renderer
+├── game_screen.py        # Game playing screen renderer
+├── results_screen.py     # Results & ranking screen renderer
+└── other_screens.py      # Additional screens (Difficulty, Leaderboard, NameInput)
+```
+
+**Key Features of Modular UI:**
+
+- ✅ **Separation of Concerns** - Each module has single responsibility
+- ✅ **Maintainability** - Easy to update individual screens
+- ✅ **Reusability** - Shared utilities in base_renderer
+- ✅ **Scalability** - Simple to add new screens or features
+- ✅ **Clean Code** - Well-organized with clear dependencies
 
 ---
 
@@ -408,25 +499,30 @@ graph LR
 Game ini menggunakan **MediaPipe Face Mesh** yang mendeteksi **478 landmark points** pada wajah secara real-time:
 
 #### 1. 🔍 **Deteksi Landmark**
+
 ```python
 # Key landmarks used:
 - Mouth: landmarks 61, 291 (corners), 13, 14 (lips)
-- Eyebrows: landmarks 70, 63 (left), 300, 293 (right)  
+- Eyebrows: landmarks 70, 63 (left), 300, 293 (right)
 - Eyes: landmarks 159, 145 (left), 386, 374 (right)
 ```
 
 #### 2. 📐 **Analisis Geometri**
-- **Happy** 😊: 
+
+- **Happy** 😊:
+
   - Mouth corners elevated (y-position)
   - Slight mouth opening
   - Distance ratio: `mouth_width / mouth_height > 2.0`
 
 - **Sad** 😢:
+
   - Mouth corners depressed
   - Eyebrows lowered
   - Mouth curvature negative
 
 - **Surprised** 😲:
+
   - Mouth height > 20 pixels
   - Eyes wide open (eyebrow distance increased)
   - Jaw dropped significantly
@@ -437,21 +533,22 @@ Game ini menggunakan **MediaPipe Face Mesh** yang mendeteksi **478 landmark poin
   - Balanced landmark positions
 
 #### 3. ✅ **Klasifikasi**
+
 ```python
 # Confidence thresholds
 HAPPY_THRESHOLD = 0.02      # Mouth corner elevation
-SAD_THRESHOLD = -0.02       # Mouth corner depression  
+SAD_THRESHOLD = -0.02       # Mouth corner depression
 SURPRISED_THRESHOLD = 20    # Mouth height in pixels
 ```
 
 ### 🎯 Akurasi & Performance
 
-| Metrik | Value |
-|--------|-------|
-| Detection FPS | ~30 FPS |
-| Landmark Detection | 478 points |
-| Expression Accuracy | ~85-90% |
-| Latency | <50ms |
+| Metrik              | Value      |
+| ------------------- | ---------- |
+| Detection FPS       | ~30 FPS    |
+| Landmark Detection  | 478 points |
+| Expression Accuracy | ~85-90%    |
+| Latency             | <50ms      |
 
 ---
 
@@ -465,6 +562,7 @@ SURPRISED_THRESHOLD = 20    # Mouth height in pixels
 **Problem**: `Failed to open camera` error
 
 **Solutions**:
+
 ```bash
 # 1. Check kamera tidak digunakan aplikasi lain
 # Tutup Zoom, Teams, Skype, dll
@@ -488,6 +586,7 @@ python -c "import cv2; cap = cv2.VideoCapture(0); print('OK' if cap.isOpened() e
 **Problem**: `ModuleNotFoundError` atau import errors
 
 **Solutions**:
+
 ```bash
 # 1. Pastikan venv aktif
 # Windows:
@@ -514,6 +613,7 @@ python --version
 **Problem**: venv corrupted atau tidak bisa aktif
 
 **Solutions**:
+
 ```bash
 # 1. Hapus venv lama
 # Windows:
@@ -541,6 +641,7 @@ pip install -r requirements.txt
 **Problem**: Performance issues
 
 **Solutions**:
+
 - ✅ Close aplikasi lain yang berat
 - ✅ Update graphics driver
 - ✅ Kurangi resolusi kamera (edit di `main.py`)
@@ -555,6 +656,7 @@ pip install -r requirements.txt
 **Problem**: No sound atau audio error
 
 **Solutions**:
+
 ```bash
 # 1. Check file audio ada di assets/sounds/
 ls assets/sounds/  # Linux/Mac
@@ -575,6 +677,7 @@ python -c "import pygame; pygame.mixer.init(); print('OK')"
 **Problem**: False positives atau ekspresi salah
 
 **Solutions**:
+
 - ✅ **Pencahayaan**: Pastikan ruangan cukup terang
 - ✅ **Posisi**: Jaga wajah di tengah frame
 - ✅ **Jarak**: 40-60 cm dari kamera ideal
@@ -601,7 +704,6 @@ python -c "import pygame; pygame.mixer.init(); print('OK')"
 - 📗 [OpenCV Python Tutorials](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html)
 - 📙 [Pygame Documentation](https://www.pygame.org/docs/)
 - 📕 [NumPy User Guide](https://numpy.org/doc/stable/user/index.html)
-
 
 ---
 
