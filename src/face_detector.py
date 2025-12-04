@@ -148,17 +148,24 @@ class FaceDetector:
             print(f"MAR: {mar:.3f}, Smile: {mouth_smile:.4f}, Eye: {avg_eye_height:.1f}, Brow: {avg_eyebrow_height:.1f}")
         
         # Expression detection with improved thresholds
+        # Adjust these values to fine-tune detection sensitivity
         
         # SURPRISED: Mouth wide open + eyebrows raised + eyes wide
-        if mar > 0.4 and avg_eyebrow_height > 15 and avg_eye_height > 8:
+        # Increase MAR (0.4 -> 0.5) untuk lebih strict
+        # Increase eyebrow (15 -> 18) untuk butuh alis lebih naik
+        if mar > 0.45 and avg_eyebrow_height > 16 and avg_eye_height > 9:
             return "surprised"
         
         # HAPPY: Mouth corners up (smile) + moderate mouth opening
-        elif mouth_smile > 0.003 and mar > 0.15:
+        # Increase smile (0.003 -> 0.004) untuk butuh senyum lebih jelas
+        # Increase MAR (0.15 -> 0.18) untuk butuh mulut lebih terbuka
+        elif mouth_smile > 0.004 and mar > 0.18:
             return "happy"
         
         # SAD: Mouth corners down + eyebrows slightly down
-        elif mouth_smile < -0.002 and avg_eyebrow_height < 12:
+        # Decrease smile (-0.002 -> -0.003) untuk butuh cemberut lebih jelas
+        # Keep eyebrow threshold sama
+        elif mouth_smile < -0.003 and avg_eyebrow_height < 12:
             return "sad"
         
         # NEUTRAL: Default state
