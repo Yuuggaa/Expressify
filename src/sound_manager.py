@@ -7,15 +7,18 @@ import numpy as np
 pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=512)
 pygame.init()
 
+
 # Get base path for assets (works with PyInstaller)
 def get_base_path():
-    if getattr(sys, 'frozen', False):
+    if getattr(sys, "frozen", False):
         return sys._MEIPASS
     else:
         return Path(__file__).resolve().parent.parent
 
+
 PROJECT_ROOT = get_base_path()
 ASSETS_DIR = os.path.join(PROJECT_ROOT, "assets", "sounds")
+
 
 class SoundManager:
     def __init__(self):
@@ -26,6 +29,7 @@ class SoundManager:
         sound_files = {
             "bgm": "bgm.wav",
             "start": "click.wav",
+            "click": "click.wav",  # Alias untuk start
             "high_score": "high_score.wav",
             "botHigh_score": "botHigh_score.wav",
             "upLow_score": "upLow_score.wav",
@@ -38,19 +42,23 @@ class SoundManager:
             if os.path.exists(filepath):
                 try:
                     self.sounds[sound_name] = pygame.mixer.Sound(filepath)
-                    
+
                     # Buat versi trimmed untuk suara click (mulai dari pertengahan)
-                    if sound_name == "start":
-                        self.trimmed_sounds[sound_name] = self.trim_sound(filepath, start_percent=0.62)
+                    if sound_name in ["start", "click"]:
+                        self.trimmed_sounds[sound_name] = self.trim_sound(
+                            filepath, start_percent=0.62
+                        )
                     if sound_name == "true_answer":
-                        self.trimmed_sounds[sound_name] = self.trim_sound(filepath, start_percent=0.5)
-                    
+                        self.trimmed_sounds[sound_name] = self.trim_sound(
+                            filepath, start_percent=0.5
+                        )
+
                     # Set volume untuk suara tertentu
                     if sound_name == "true_answer":
                         self.sounds[sound_name].set_volume(0.8)  # Volume 80%
                     elif sound_name == "bgm":
                         self.sounds[sound_name].set_volume(0.3)  # BGM lebih pelan
-                    elif sound_name == "start":
+                    elif sound_name in ["start", "click"]:
                         self.sounds[sound_name].set_volume(1.0)  # Click full volume
                         if sound_name in self.trimmed_sounds:
                             self.trimmed_sounds[sound_name].set_volume(1.0)
@@ -58,19 +66,19 @@ class SoundManager:
                     print(f"Could not load sound '{filename}': {e}")
             else:
                 print(f"Sound file not found: {filepath}")
-    
+
     def trim_sound(self, filepath, start_percent=0.3):
         try:
             # Load sound sebagai array
             sound = pygame.mixer.Sound(filepath)
             sound_array = pygame.sndarray.array(sound)
-            
+
             # Hitung posisi mulai
             start_frame = int(len(sound_array) * start_percent)
-            
+
             # Potong array dari posisi start
             trimmed_array = sound_array[start_frame:]
-            
+
             # Buat Sound baru dari array yang sudah dipotong
             trimmed_sound = pygame.sndarray.make_sound(trimmed_array)
             return trimmed_sound
@@ -91,7 +99,7 @@ class SoundManager:
             sound = self.trimmed_sounds[sound_name]
         else:
             sound = self.sounds.get(sound_name)
-            
+
         if sound:
             if volume is not None:
                 sound.set_volume(volume)

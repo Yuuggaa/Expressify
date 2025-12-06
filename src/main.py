@@ -8,15 +8,17 @@ from ui import UIManager
 from sound_manager import SoundManager
 from leaderboard_manager import LeaderboardManager
 
+
 # Get base path for assets (works with PyInstaller)
 def get_base_path():
     """Get base path for assets, works in dev and frozen (exe) mode"""
-    if getattr(sys, 'frozen', False):
+    if getattr(sys, "frozen", False):
         # Running as compiled executable
         return sys._MEIPASS
     else:
         # Running in development
         return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 
 # Set base path globally
 BASE_PATH = get_base_path()
@@ -33,6 +35,13 @@ class Expressify:
         # Game settings
         self.WINDOW_WIDTH = 1280
         self.WINDOW_HEIGHT = 720
+        self.is_fullscreen = False
+
+        # Create window (windowed mode by default)
+        self.screen = pygame.display.set_mode(
+            (self.WINDOW_WIDTH, self.WINDOW_HEIGHT), pygame.RESIZABLE
+        )
+        pygame.display.set_caption("Expressify - Face Expression Game")
 
         # Initialize components
         self.face_detector = FaceDetector()
@@ -64,6 +73,7 @@ class Expressify:
 
         # Leaderboard view
         self.leaderboard_difficulty = "medium"
+        self.leaderboard_difficulty_index = 1  # 0=easy, 1=medium, 2=hard
 
     def run(self):
         """Main game loop"""
@@ -72,11 +82,28 @@ class Expressify:
         menu_bgm_played = False  # 🔹 flag untuk menu BGM
 
         while self.running:
+            # Reset cursor to default at start of each frame
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
                 elif event.type == pygame.KEYDOWN:
                     self.handle_keypress(event.key)
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:  # Left click
+                        self.handle_mouse_click(event.pos)
+                elif event.type == pygame.VIDEORESIZE:
+                    # Handle window resize
+                    if not self.is_fullscreen:
+                        self.WINDOW_WIDTH = event.w
+                        self.WINDOW_HEIGHT = event.h
+                        self.screen = pygame.display.set_mode(
+                            (self.WINDOW_WIDTH, self.WINDOW_HEIGHT), pygame.RESIZABLE
+                        )
+                        self.ui_manager = UIManager(
+                            self.WINDOW_WIDTH, self.WINDOW_HEIGHT
+                        )
 
             # Update game based on state
             if self.game_state == "menu":
@@ -122,7 +149,6 @@ class Expressify:
             expression_detected,
         )
 
-
         if self.game_logic.is_game_over():
             self.game_state = "results"
             self.sound_manager.stop("bgm")
@@ -146,12 +172,17 @@ class Expressify:
 
     def handle_keypress(self, key):
         """Handle keyboard input"""
+        # Toggle fullscreen with F11
+        if key == pygame.K_F11:
+            self.toggle_fullscreen()
+            return
+
         if self.game_state == "menu":
             if key == pygame.K_LEFT:
                 self.menu_index = max(0, self.menu_index - 1)
             elif key == pygame.K_RIGHT:
                 self.menu_index = min(2, self.menu_index + 1)
-            elif key == pygame.K_SPACE:
+            elif key == pygame.K_RETURN:
                 self.sound_manager.play("start")
                 if self.menu_index == 0:  # Play
                     self.game_state = "name_input"
@@ -189,7 +220,7 @@ class Expressify:
                 self.difficulty_index = max(0, self.difficulty_index - 1)
             elif key == pygame.K_DOWN:
                 self.difficulty_index = min(2, self.difficulty_index + 1)
-            elif key == pygame.K_SPACE:
+            elif key == pygame.K_RETURN:
                 self.sound_manager.play("start")
                 # Set difficulty and start game
                 difficulties = ["easy", "medium", "hard"]
@@ -204,17 +235,29 @@ class Expressify:
                 self.game_state = "name_input"
 
         elif self.game_state == "leaderboard":
-            if key == pygame.K_1:
-                self.leaderboard_difficulty = "easy"
-            elif key == pygame.K_2:
-                self.leaderboard_difficulty = "medium"
-            elif key == pygame.K_3:
-                self.leaderboard_difficulty = "hard"
+            if key == pygame.K_LEFT:
+                self.leaderboard_difficulty_index = max(
+                    0, self.leaderboard_difficulty_index - 1
+                )
+                difficulties = ["easy", "medium", "hard"]
+                self.leaderboard_difficulty = difficulties[
+                    self.leaderboard_difficulty_index
+                ]
+                self.sound_manager.play("click")
+            elif key == pygame.K_RIGHT:
+                self.leaderboard_difficulty_index = min(
+                    2, self.leaderboard_difficulty_index + 1
+                )
+                difficulties = ["easy", "medium", "hard"]
+                self.leaderboard_difficulty = difficulties[
+                    self.leaderboard_difficulty_index
+                ]
+                self.sound_manager.play("click")
             elif key == pygame.K_ESCAPE:
                 self.game_state = "menu"
 
         elif self.game_state == "results":
-            if key == pygame.K_SPACE:
+            if key == pygame.K_RETURN:
                 self.sound_manager.play("start")
                 self.game_state = "difficulty_select"
                 self.sound_manager.stop("high_score")
@@ -227,6 +270,103 @@ class Expressify:
                 self.game_state = "menu"
                 self.menu_index = 0
                 self.player_name = ""  # Reset nama ketika kembali ke menu
+
+    def handle_mouse_click(self, pos):
+        """Handle mouse click events"""
+        if self.game_state == "menu":
+            # Get button rectangles from menu screen
+            button_rects = self.ui_manager.menu_screen.get_button_rects()
+            for i, rect in enumerate(button_rects):
+                if rect.collidepoint(pos):
+                    self.menu_index = i
+                    self.sound_manager.play("start")
+                    if self.menu_index == 0:  # Play
+                        self.game_state = "name_input"
+                        self.player_name = ""
+                    elif self.menu_index == 1:  # Leaderboard
+                        self.game_state = "leaderboard"
+                    elif self.menu_index == 2:  # Quit
+                        self.running = False
+                    break
+
+        elif self.game_state == "difficulty_select":
+            # Get difficulty button rectangles
+            button_rects = self.ui_manager.difficulty_screen.get_button_rects()
+            for i, rect in enumerate(button_rects):
+                if rect.collidepoint(pos):
+                    self.difficulty_index = i
+                    self.sound_manager.play("start")
+                    difficulties = ["easy", "medium", "hard"]
+                    self.difficulty = difficulties[self.difficulty_index]
+                    self.game_logic = GameLogic(difficulty=self.difficulty)
+                    self.sound_manager.stop("bgm")
+                    self.sound_manager.play("bgm", loops=-1)
+                    self.game_state = "playing"
+                    self.game_logic.start_game()
+                    break
+
+        elif self.game_state == "leaderboard":
+            # Check if clicked on difficulty tabs
+            tab_rects = self.ui_manager.leaderboard_screen.get_tab_rects()
+            for i, rect in enumerate(tab_rects):
+                if rect.collidepoint(pos):
+                    difficulties = ["easy", "medium", "hard"]
+                    self.leaderboard_difficulty_index = i
+                    self.leaderboard_difficulty = difficulties[i]
+                    self.sound_manager.play("click")
+                    break
+
+            # Check back button
+            back_rect = self.ui_manager.leaderboard_screen.get_back_button_rect()
+            if back_rect and back_rect.collidepoint(pos):
+                self.game_state = "menu"
+                self.sound_manager.play("click")
+
+        elif self.game_state == "results":
+            # Get play again and menu button rectangles
+            button_rects = self.ui_manager.results_screen.get_button_rects()
+            if len(button_rects) >= 2:
+                # Play Again button
+                if button_rects[0].collidepoint(pos):
+                    self.sound_manager.play("start")
+                    self.game_state = "difficulty_select"
+                    self.sound_manager.stop("high_score")
+                    self.sound_manager.stop("botHigh_score")
+                    self.sound_manager.stop("upLow_score")
+                    self.sound_manager.stop("low_score")
+                    self.sound_manager.play("bgm", loops=-1)
+                    self.game_logic.reset()
+                # Main Menu button
+                elif button_rects[1].collidepoint(pos):
+                    self.game_state = "menu"
+                    self.menu_index = 0
+                    self.player_name = ""
+                    self.sound_manager.play("click")
+
+    def toggle_fullscreen(self):
+        """Toggle between fullscreen and windowed mode"""
+        self.is_fullscreen = not self.is_fullscreen
+
+        if self.is_fullscreen:
+            # Switch to fullscreen
+            self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+            # Get actual fullscreen resolution
+            info = pygame.display.Info()
+            self.WINDOW_WIDTH = info.current_w
+            self.WINDOW_HEIGHT = info.current_h
+        else:
+            # Switch back to windowed mode
+            self.WINDOW_WIDTH = 1280
+            self.WINDOW_HEIGHT = 720
+            self.screen = pygame.display.set_mode(
+                (self.WINDOW_WIDTH, self.WINDOW_HEIGHT), pygame.RESIZABLE
+            )
+
+        # Recreate UI manager with new dimensions
+        self.ui_manager = UIManager(self.WINDOW_WIDTH, self.WINDOW_HEIGHT)
+        print(
+            f"{'Fullscreen' if self.is_fullscreen else 'Windowed'} mode: {self.WINDOW_WIDTH}x{self.WINDOW_HEIGHT}"
+        )
 
     def cleanup(self):
         """Clean up resources"""
