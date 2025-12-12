@@ -27,6 +27,7 @@
 <div align="center">
 
 ### 🎯 Preview Game
+**https://youtu.be/yy_7H83gZ9U**
 
 | Menu Utama                    | Gameplay                          | Leaderboard                                 |
 | ----------------------------- | --------------------------------- | ------------------------------------------- |
